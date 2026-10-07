@@ -78,6 +78,8 @@ struct ExpandedPanelView: View {
     @ViewBuilder
     private var tabContent: some View {
         switch notch.selectedTab {
+        case .ai:
+            AISearchView()
         case .settings:
             SettingsView()
         default:
