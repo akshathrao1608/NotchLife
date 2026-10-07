@@ -1,4 +1,5 @@
 import SwiftUI
+import Combine
 
 // AppEnvironment.swift
 // One place that creates and holds every "model" (the objects that remember data).
@@ -19,6 +20,11 @@ final class AppEnvironment: ObservableObject {
     let pomodoro: PomodoroModel
     let sports: SportsModel
     let scores = GameScores()
+    let stats = SystemStatsModel()
+    let cleanDesk = CleanDeskModel()
+    let ambient: AmbientPlayer
+    let clipboard: ClipboardMonitor
+    private var cancellables = Set<AnyCancellable>()
 
     /// Set by the AppDelegate once the window exists.
     var panel: NotchPanelController?
@@ -39,12 +45,23 @@ final class AppEnvironment: ObservableObject {
         assignments = AssignmentStore(settings: settings, streak: streak)
         pomodoro = PomodoroModel(settings: settings, streak: streak)
         sports = SportsModel(settings: settings)
+        ambient = AmbientPlayer(settings: settings)
+        clipboard = ClipboardMonitor(settings: settings)
     }
 
     /// Called once when the app launches.
     func start() {
         assignments.rescheduleReminders()
         sports.start()
+        // Battery and Wi-Fi are only read in the background while the compact bar shows them.
+        settings.$prefs
+            .map { $0.showBattery || $0.showWifi }
+            .removeDuplicates()
+            .receive(on: DispatchQueue.main)
+            .sink { [weak self] needed in
+                if needed { self?.stats.startLightRefresh() } else { self?.stats.stopLightRefresh() }
+            }
+            .store(in: &cancellables)
     }
 }
 
@@ -64,5 +81,9 @@ extension View {
             .environmentObject(env.pomodoro)
             .environmentObject(env.sports)
             .environmentObject(env.scores)
+            .environmentObject(env.stats)
+            .environmentObject(env.cleanDesk)
+            .environmentObject(env.ambient)
+            .environmentObject(env.clipboard)
     }
 }

@@ -34,6 +34,7 @@ struct CompactBarView: View {
     @EnvironmentObject private var pomodoro: PomodoroModel
     @EnvironmentObject private var sports: SportsModel
     @EnvironmentObject private var scores: GameScores
+    @EnvironmentObject private var stats: SystemStatsModel
 
     var body: some View {
         let geometry = notch.geometry
@@ -102,6 +103,24 @@ struct CompactBarView: View {
                             text: scores.bestText(for: prefs.compactGame) ?? "–",
                             tint: .yellow,
                             label: "Best \(prefs.compactGame.title) score: \(scores.bestText(for: prefs.compactGame) ?? "none yet")")
+            }
+            if prefs.showBattery, let percent = stats.batteryPercent {
+                CompactChip(icon: stats.isCharging ? "battery.100.bolt" : "battery.75",
+                            text: "\(percent)%",
+                            tint: percent <= 15 && !stats.isCharging ? .red : .white,
+                            label: "Battery \(percent) percent\(stats.isCharging ? ", charging" : "")")
+            }
+            if prefs.showWifi {
+                CompactChip(icon: stats.wifiConnected ? "wifi" : "wifi.slash", text: "",
+                            tint: stats.wifiConnected ? .white : .orange,
+                            label: stats.wifiConnected ? "Wi-Fi connected" : "Not connected to Wi-Fi")
+            }
+            if prefs.showTime {
+                Text(Date(), style: .time)
+                    .lnFont(10.5, .medium)
+                    .foregroundStyle(.white)
+                    .monospacedDigit()
+                    .accessibilityLabel("Current time")
             }
             if prefs.showAIChip {
                 Button { notch.open(.ai) } label: {

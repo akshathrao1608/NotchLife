@@ -49,6 +49,7 @@ final class NotchPanelController {
         panel.keyHandler = { [weak self] event in self?.handleKey(event) ?? false }
 
         env.notch.selectedTab = env.settings.prefs.lastTab
+        env.notch.macFunSection = env.settings.prefs.lastMacFunSection
         env.notch.onRequestMode = { [weak self] mode in self?.setMode(mode) }
 
         hotKey.onTrigger = { [weak self] in self?.env.notch.toggle() }
@@ -66,6 +67,15 @@ final class NotchPanelController {
             .sink { [weak self] tab in
                 guard let self = self else { return }
                 if self.env.settings.prefs.lastTab != tab { self.env.settings.prefs.lastTab = tab }
+            }
+            .store(in: &cancellables)
+
+        env.notch.$macFunSection
+            .dropFirst()
+            .receive(on: DispatchQueue.main)
+            .sink { [weak self] section in
+                guard let self = self else { return }
+                if self.env.settings.prefs.lastMacFunSection != section { self.env.settings.prefs.lastMacFunSection = section }
             }
             .store(in: &cancellables)
 

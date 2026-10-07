@@ -115,6 +115,7 @@ struct Preferences: Codable, Equatable {
     var ambientVolume = 0.4
     var quickLaunch: [QuickLaunchItem] = []
     var completionSounds = true
+    var cleanDeskChecked: [String] = []
 
     // MARK: Loading / saving
 

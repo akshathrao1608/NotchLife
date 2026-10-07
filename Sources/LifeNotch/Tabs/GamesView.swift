@@ -6,9 +6,24 @@ import SwiftUI
 struct GamesView: View {
     @EnvironmentObject private var scores: GameScores
     @EnvironmentObject private var settings: AppSettings
+    @EnvironmentObject private var notch: NotchState
     @State private var selected: GameKind?
 
     var body: some View {
+        content
+            .onAppear(perform: takePendingGame)
+            .onChange(of: notch.pendingGame) { _ in takePendingGame() }
+    }
+
+    private func takePendingGame() {
+        if let game = notch.pendingGame {
+            selected = game
+            notch.pendingGame = nil
+        }
+    }
+
+    @ViewBuilder
+    private var content: some View {
         if let game = selected {
             VStack(spacing: 8) {
                 HStack {

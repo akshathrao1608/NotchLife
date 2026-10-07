@@ -89,7 +89,7 @@ struct ExpandedPanelView: View {
         case .games:
             GamesView()
         case .macFun:
-            PomodoroView()
+            MacFunView()
         case .settings:
             SettingsView()
         default:

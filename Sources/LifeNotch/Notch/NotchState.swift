@@ -15,6 +15,8 @@ final class NotchState: ObservableObject {
     @Published var geometry = NotchGeometry()
     @Published var selectedTab: NotchTab = .ai
     @Published var macFunSection: MacFunSection = .focus
+    /// Set by "Random Fun" so the Games tab can jump straight into a game.
+    @Published var pendingGame: GameKind?
 
     /// Width available to the left / right of the camera notch in the compact bar.
     @Published var leftSide: CGFloat = 150

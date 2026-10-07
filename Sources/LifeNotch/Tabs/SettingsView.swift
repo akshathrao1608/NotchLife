@@ -89,11 +89,30 @@ struct SettingsView: View {
     private var compactBarCard: some View {
         VStack(alignment: .leading, spacing: 6) {
             SectionTitle("Compact bar (beside the camera notch)")
+            Toggle("Next assignment due", isOn: $settings.prefs.showAssignmentChip)
+            Toggle("Countdown to next race or match", isOn: $settings.prefs.showCountdownChip)
+            if settings.prefs.showCountdownChip {
+                Picker("Countdown for", selection: $settings.prefs.countdownSource) {
+                    ForEach(CountdownSource.allCases) { Text($0.title).tag($0) }
+                }
+                .frame(maxWidth: 320)
+            }
+            Toggle("Unread message count (needs Messages hub turned on)", isOn: $settings.prefs.showMessagesChip)
+            Toggle("Focus timer while it is running", isOn: $settings.prefs.showTimerChip)
+            Toggle("Best mini-game score", isOn: $settings.prefs.showBestScoreChip)
+            if settings.prefs.showBestScoreChip {
+                Picker("Game to show", selection: $settings.prefs.compactGame) {
+                    ForEach(GameKind.allCases) { Text($0.title).tag($0) }
+                }
+                .frame(maxWidth: 320)
+            }
             Toggle("AI search icon", isOn: $settings.prefs.showAIChip)
             Toggle("Quick browser search icon", isOn: $settings.prefs.showBrowserChip)
-            Toggle("Battery (only if you turn it on)", isOn: $settings.prefs.showBattery)
-            Toggle("Wi-Fi (only if you turn it on)", isOn: $settings.prefs.showWifi)
-            Toggle("Time (only if you turn it on)", isOn: $settings.prefs.showTime)
+            Divider()
+            Text("Off until you turn them on:").lnFont(10.5).foregroundStyle(.secondary)
+            Toggle("Battery", isOn: $settings.prefs.showBattery)
+            Toggle("Wi-Fi", isOn: $settings.prefs.showWifi)
+            Toggle("Time", isOn: $settings.prefs.showTime)
         }
         .card()
     }
