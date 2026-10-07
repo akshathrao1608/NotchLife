@@ -54,8 +54,8 @@ enum DataManagement {
         env.history.clear()
         env.clipboard.clear()
         env.messages.wipe()
-        NotificationManager.shared.cancel(prefix: "assignment.")
-        NotificationManager.shared.cancel(prefix: "sports.")
+        NotificationManager.shared.replaceAll(prefix: "assignment.", with: [])
+        NotificationManager.shared.replaceAll(prefix: "sports.", with: [])
         if alsoRemoveKeys {
             for provider in AIProviderKind.allCases { KeychainStore.delete(account: provider.keychainAccount) }
             KeychainStore.delete(account: SportsModel.footballKeyAccount)

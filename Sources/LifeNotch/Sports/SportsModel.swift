@@ -174,24 +174,24 @@ final class SportsModel: ObservableObject {
     // MARK: Notifications (live data only; never for demo data)
 
     func rescheduleNotifications() {
-        let notifications = NotificationManager.shared
-        notifications.cancel(prefix: "sports.")
-        guard settings.prefs.sportsNotificationsEnabled else { return }
-        let lead = TimeInterval(settings.prefs.sportsNotifyMinutesBefore * 60)
-
-        if !f1IsDemo, let race = nextRace {
-            notifications.schedule(id: "sports.f1.\(race.round)",
-                                   title: "\(race.name) starts soon",
-                                   body: "\(race.circuit), \(race.country)",
-                                   at: race.start.addingTimeInterval(-lead))
-        }
-        if !footballIsDemo {
-            for match in favouriteUpcoming.prefix(5) {
-                notifications.schedule(id: "sports.football.\(match.id)",
-                                       title: "\(match.home) vs \(match.away)",
-                                       body: match.competition,
-                                       at: match.kickoff.addingTimeInterval(-lead))
+        var reminders: [NotificationManager.Reminder] = []
+        if settings.prefs.sportsNotificationsEnabled {
+            let lead = TimeInterval(settings.prefs.sportsNotifyMinutesBefore * 60)
+            if !f1IsDemo, let race = nextRace {
+                reminders.append(.init(id: "sports.f1.\(race.round)",
+                                       title: "\(race.name) starts soon",
+                                       body: "\(race.circuit), \(race.country)",
+                                       date: race.start.addingTimeInterval(-lead)))
+            }
+            if !footballIsDemo {
+                for match in favouriteUpcoming.prefix(5) {
+                    reminders.append(.init(id: "sports.football.\(match.id)",
+                                           title: "\(match.home) vs \(match.away)",
+                                           body: match.competition,
+                                           date: match.kickoff.addingTimeInterval(-lead)))
+                }
             }
         }
+        NotificationManager.shared.replaceAll(prefix: "sports.", with: reminders)
     }
 }

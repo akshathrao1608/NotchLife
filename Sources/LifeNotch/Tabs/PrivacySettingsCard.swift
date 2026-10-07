@@ -1,5 +1,6 @@
 import SwiftUI
 import AppKit
+import UniformTypeIdentifiers
 
 // PrivacySettingsCard.swift
 // Settings > Privacy and data: see exactly what is stored, change permissions you gave, and reset.

@@ -97,20 +97,21 @@ final class AssignmentStore: ObservableObject {
     // MARK: Reminders (only if you turned them on)
 
     func rescheduleReminders() {
-        let notifications = NotificationManager.shared
-        notifications.cancel(prefix: "assignment.")
-        guard settings.prefs.assignmentReminders else { return }
-        for assignment in upcoming {
-            let subject = assignment.subject.isEmpty ? "Assignment" : assignment.subject
-            notifications.schedule(id: "assignment.\(assignment.id).24h",
-                                   title: "Due tomorrow: \(subject)",
-                                   body: assignment.title,
-                                   at: assignment.due.addingTimeInterval(-24 * 3600))
-            notifications.schedule(id: "assignment.\(assignment.id).1h",
-                                   title: "Due in 1 hour: \(subject)",
-                                   body: assignment.title,
-                                   at: assignment.due.addingTimeInterval(-3600))
+        var reminders: [NotificationManager.Reminder] = []
+        if settings.prefs.assignmentReminders {
+            for assignment in upcoming {
+                let subject = assignment.subject.isEmpty ? "Assignment" : assignment.subject
+                reminders.append(.init(id: "assignment.\(assignment.id).24h",
+                                       title: "Due tomorrow: \(subject)",
+                                       body: assignment.title,
+                                       date: assignment.due.addingTimeInterval(-24 * 3600)))
+                reminders.append(.init(id: "assignment.\(assignment.id).1h",
+                                       title: "Due in 1 hour: \(subject)",
+                                       body: assignment.title,
+                                       date: assignment.due.addingTimeInterval(-3600)))
+            }
         }
+        NotificationManager.shared.replaceAll(prefix: "assignment.", with: reminders)
     }
 
     // MARK: Backup / export

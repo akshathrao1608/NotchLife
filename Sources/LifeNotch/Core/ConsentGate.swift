@@ -113,13 +113,24 @@ final class NotificationManager {
         UNUserNotificationCenter.current().add(UNNotificationRequest(identifier: id, content: content, trigger: nil))
     }
 
-    /// Removes every pending notification whose id starts with the prefix.
-    func cancel(prefix: String) {
+    struct Reminder {
+        let id: String
+        let title: String
+        let body: String
+        let date: Date
+    }
+
+    /// Removes every pending notification whose id starts with the prefix, THEN schedules the
+    /// new ones. Doing both in one step avoids the new reminders being removed by mistake.
+    func replaceAll(prefix: String, with reminders: [Reminder]) {
         guard isAvailable else { return }
         let center = UNUserNotificationCenter.current()
-        center.getPendingNotificationRequests { requests in
+        center.getPendingNotificationRequests { [weak self] requests in
             let ids = requests.map { $0.identifier }.filter { $0.hasPrefix(prefix) }
             center.removePendingNotificationRequests(withIdentifiers: ids)
+            for reminder in reminders {
+                self?.schedule(id: reminder.id, title: reminder.title, body: reminder.body, at: reminder.date)
+            }
         }
     }
 }
