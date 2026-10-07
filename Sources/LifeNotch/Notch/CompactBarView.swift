@@ -10,12 +10,15 @@ struct CompactChip: View {
     let icon: String
     let text: String
     var tint: Color = .white
+    /// Keep the text even in icons-only mode (used for the timer and unread count).
+    var keepsText = false
     var label: String
+    @EnvironmentObject private var settings: AppSettings
 
     var body: some View {
         HStack(spacing: 3) {
             Image(systemName: icon).font(.system(size: 10, weight: .semibold))
-            if !text.isEmpty {
+            if !text.isEmpty && (keepsText || !settings.prefs.compactIconsOnly) {
                 Text(text).lnFont(10.5, .medium).monospacedDigit()
             }
         }
@@ -47,9 +50,11 @@ struct CompactBarView: View {
                 HStack(spacing: 0) {
                     leftChips(prefs)
                         .frame(width: notch.leftSide, alignment: .trailing)
+                        .clipped()
                     Color.clear.frame(width: geometry.notchWidth)
                     rightChips(prefs)
                         .frame(width: notch.rightSide, alignment: .leading)
+                        .clipped()
                 }
                 .frame(height: geometry.notchHeight)
 
@@ -87,6 +92,7 @@ struct CompactBarView: View {
                 CompactChip(icon: pomodoro.isRunning ? "timer" : "pause.fill",
                             text: Countdown.clock(pomodoro.remaining),
                             tint: pomodoro.phase == .focus ? settings.prefs.theme.accent : .green,
+                            keepsText: true,
                             label: "\(pomodoro.phase.title) timer, \(Countdown.clock(pomodoro.remaining)) left")
             }
             if prefs.notchAnimation != .none {
@@ -104,6 +110,7 @@ struct CompactBarView: View {
                 CompactChip(icon: "message.fill",
                             text: unread > 0 ? "\(unread)" : "",
                             tint: unread > 0 ? .green : Color.white.opacity(0.55),
+                            keepsText: true,
                             label: "\(unread) unread messages")
             }
             if prefs.showBestScoreChip {

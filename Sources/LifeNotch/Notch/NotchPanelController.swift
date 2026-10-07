@@ -116,9 +116,7 @@ final class NotchPanelController {
 
     private func prefsChanged(_ prefs: Preferences) {
         env.notch.recomputeCompactWidths(prefs)
-        if env.notch.mode != .expanded {
-            panel.setFrame(frame(for: env.notch.mode, on: targetScreen()), display: true)
-        }
+        panel.setFrame(frame(for: env.notch.mode, on: targetScreen()), display: true)
         if registeredHotKey != prefs.hotKey || registeredHotKeyEnabled != prefs.globalHotKeyEnabled {
             registeredHotKey = prefs.hotKey
             registeredHotKeyEnabled = prefs.globalHotKeyEnabled

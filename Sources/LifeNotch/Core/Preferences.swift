@@ -49,6 +49,12 @@ struct Preferences: Codable, Equatable {
     var showBrowserChip = true
     var showBestScoreChip = true
     var compactGame: GameKind = .reaction
+    /// Width of the bar on EACH side of the camera notch, in points. 0 = fit the icons automatically.
+    var compactSideWidth: Double = 0
+    /// Show only icons in the bar (no text). Keeps the bar narrow so it doesn't cover menu-bar items.
+    var compactIconsOnly = true
+    /// Size of the open panel.
+    var panelSize: PanelSize = .normal
     var showBattery = false      // off until you turn it on
     var showWifi = false         // off until you turn it on
     var showTime = false         // off until you turn it on

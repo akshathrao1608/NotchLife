@@ -89,6 +89,28 @@ struct SettingsView: View {
 
     private var compactBarCard: some View {
         VStack(alignment: .leading, spacing: 6) {
+            SectionTitle("Notch size")
+            Text("If the bar covers menu-bar items, make it narrower here.").lnFont(10.5).foregroundStyle(.secondary)
+            Toggle("Icons only (no text), keeps the bar narrow", isOn: $settings.prefs.compactIconsOnly)
+            Toggle("Fit the bar to my icons automatically", isOn: Binding(
+                get: { settings.prefs.compactSideWidth == 0 },
+                set: { settings.prefs.compactSideWidth = $0 ? 0 : 70 }
+            ))
+            if settings.prefs.compactSideWidth > 0 {
+                HStack {
+                    Text("Width on each side of the camera").lnFont(12)
+                    Slider(value: $settings.prefs.compactSideWidth, in: 10...220, step: 2)
+                        .frame(maxWidth: 200)
+                        .accessibilityLabel("Bar width on each side of the camera notch")
+                    Text("\(Int(settings.prefs.compactSideWidth)) pt").lnFont(11).monospacedDigit()
+                }
+            }
+            Picker("Open panel size", selection: $settings.prefs.panelSize) {
+                ForEach(PanelSize.allCases) { Text($0.title).tag($0) }
+            }
+            .pickerStyle(.segmented)
+            .frame(maxWidth: 320)
+            Divider()
             SectionTitle("Compact bar (beside the camera notch)")
             Toggle("Next assignment due", isOn: $settings.prefs.showAssignmentChip)
             Toggle("Countdown to next race or match", isOn: $settings.prefs.showCountdownChip)

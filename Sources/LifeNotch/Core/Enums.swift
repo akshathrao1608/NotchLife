@@ -74,6 +74,26 @@ enum MacFunSection: String, CaseIterable, Identifiable, Codable {
 
 // MARK: - Look and feel
 
+/// How big the OPEN panel is.
+enum PanelSize: String, CaseIterable, Identifiable, Codable {
+    case small, normal, large
+    var id: String { rawValue }
+    var title: String {
+        switch self {
+        case .small: return "Small"
+        case .normal: return "Normal"
+        case .large: return "Large"
+        }
+    }
+    var size: CGSize {
+        switch self {
+        case .small: return CGSize(width: 660, height: 440)
+        case .normal: return CGSize(width: 740, height: 480)
+        case .large: return CGSize(width: 860, height: 540)
+        }
+    }
+}
+
 enum Appearance: String, CaseIterable, Identifiable, Codable {
     case auto, dark, light
     var id: String { rawValue }
