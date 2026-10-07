@@ -84,12 +84,17 @@ final class CleanDeskModel: ObservableObject {
         NSWorkspace.shared.open(report.folderURL)
     }
 
-    static let checklist: [(id: String, text: String)] = [
-        ("downloads", "Look through Downloads and move the files worth keeping into proper folders"),
-        ("school", "Put finished school work into one folder for each subject"),
-        ("screenshots", "Check screenshots on the Desktop and keep only the useful ones"),
-        ("apps", "Think about apps you no longer use (you can drag them to the Trash yourself)"),
-        ("trash", "Empty the Trash yourself once you're sure"),
-        ("backup", "Back up your important files")
+    struct ChecklistItem: Identifiable {
+        let id: String
+        let text: String
+    }
+
+    static let checklist: [ChecklistItem] = [
+        ChecklistItem(id: "downloads", text: "Look through Downloads and move the files worth keeping into proper folders"),
+        ChecklistItem(id: "school", text: "Put finished school work into one folder for each subject"),
+        ChecklistItem(id: "screenshots", text: "Check screenshots on the Desktop and keep only the useful ones"),
+        ChecklistItem(id: "apps", text: "Think about apps you no longer use (you can drag them to the Trash yourself)"),
+        ChecklistItem(id: "trash", text: "Empty the Trash yourself once you're sure"),
+        ChecklistItem(id: "backup", text: "Back up your important files")
     ]
 }

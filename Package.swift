@@ -15,6 +15,12 @@ let package = Package(
         .executableTarget(
             name: "LifeNotch",
             path: "Sources/LifeNotch"
+        ),
+        // Run with:  swift test
+        .testTarget(
+            name: "LifeNotchTests",
+            dependencies: ["LifeNotch"],
+            path: "Tests/LifeNotchTests"
         )
     ]
 )

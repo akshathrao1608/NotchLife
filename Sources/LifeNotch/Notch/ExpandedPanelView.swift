@@ -94,8 +94,6 @@ struct ExpandedPanelView: View {
             MacFunView()
         case .settings:
             SettingsView()
-        default:
-            PlaceholderTabView(tab: notch.selectedTab)
         }
     }
 }
@@ -131,13 +129,5 @@ struct TabButton: View {
         .help("\(tab.title) (⌘\(tab.number))")
         .accessibilityLabel(tab.title)
         .accessibilityAddTraits(selected ? .isSelected : [])
-    }
-}
-
-/// Shown for tabs that are not built yet (temporary during development).
-struct PlaceholderTabView: View {
-    let tab: NotchTab
-    var body: some View {
-        EmptyStateView(icon: tab.icon, title: tab.title, message: "This tab is coming in a later build step.")
     }
 }

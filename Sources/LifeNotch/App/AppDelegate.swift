@@ -45,7 +45,7 @@ final class AppDelegate: NSObject, NSApplicationDelegate {
     private func setupStatusItem() {
         let item = NSStatusBar.system.statusItem(withLength: NSStatusItem.variableLength)
         if let button = item.button {
-            button.image = NSImage(systemSymbolName: "capsule.tophalf.filled", accessibilityDescription: "LifeNotch")
+            button.image = NSImage(systemSymbolName: "sparkles", accessibilityDescription: "LifeNotch")
         }
         let menu = NSMenu()
         menu.addItem(NSMenuItem(title: "Open / Close LifeNotch", action: #selector(toggleNotch), keyEquivalent: ""))

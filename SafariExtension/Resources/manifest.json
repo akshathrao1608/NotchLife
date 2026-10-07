@@ -1,0 +1,11 @@
+{
+  "manifest_version": 2,
+  "name": "LifeNotch: Ask AI about this page",
+  "description": "Sends the page title, address and your selected text to the LifeNotch app on this Mac, so you can ask its AI about it. Nothing is sent online until you press Send inside LifeNotch.",
+  "version": "0.1.0",
+  "permissions": ["activeTab"],
+  "browser_action": {
+    "default_title": "Ask LifeNotch AI",
+    "default_popup": "popup.html"
+  }
+}

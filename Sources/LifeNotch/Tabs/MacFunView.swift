@@ -348,7 +348,7 @@ struct SystemView: View {
         VStack(alignment: .leading, spacing: 6) {
             SectionTitle("Clean Desk checklist")
             Text("LifeNotch only SUGGESTS. It never deletes, moves or renames anything.").lnFont(10.5).foregroundStyle(.secondary)
-            ForEach(CleanDeskModel.checklist, id: \.id) { item in
+            ForEach(CleanDeskModel.checklist) { item in
                 Toggle(item.text, isOn: Binding(
                     get: { settings.prefs.cleanDeskChecked.contains(item.id) },
                     set: { checked in

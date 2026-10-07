@@ -98,7 +98,7 @@ enum AttachmentLoader {
 
     /// Reads text from an image, entirely on this Mac.
     static func recognizeText(imageData: Data) async throws -> String {
-        try await Task.detached(priority: .userInitiated) { () -> String in
+        try await Task.detached(priority: .userInitiated) { () throws -> String in
             guard let image = NSImage(data: imageData),
                   let cg = image.cgImage(forProposedRect: nil, context: nil, hints: nil) else {
                 throw AttachmentError.unreadable("image")
@@ -107,7 +107,8 @@ enum AttachmentLoader {
             request.recognitionLevel = .accurate
             request.usesLanguageCorrection = true
             try VNImageRequestHandler(cgImage: cg, options: [:]).perform([request])
-            let lines = (request.results ?? []).compactMap { $0.topCandidates(1).first?.string }
+            let observations = (request.results as? [VNRecognizedTextObservation]) ?? []
+            let lines = observations.compactMap { $0.topCandidates(1).first?.string }
             return lines.joined(separator: "\n")
         }.value
     }

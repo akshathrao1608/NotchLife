@@ -19,7 +19,8 @@ struct AnthropicClient: AIClient {
         ]
         if request.useWebSearch {
             // Anthropic runs the search on its side and returns citations.
-            body["tools"] = [["type": "web_search_20250305", "name": "web_search", "max_uses": 5]]
+            let searchTool: [String: Any] = ["type": "web_search_20250305", "name": "web_search", "max_uses": 5]
+            body["tools"] = [searchTool]
         }
 
         var urlRequest = URLRequest(url: URL(string: "https://api.anthropic.com/v1/messages")!)
