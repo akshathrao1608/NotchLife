@@ -14,6 +14,9 @@ final class AppEnvironment: ObservableObject {
     let ai: AIViewModel
     let history: BrowsingHistory
     let browser: BrowserModel
+    let streak: StreakStore
+    let assignments: AssignmentStore
+    let pomodoro: PomodoroModel
 
     /// Set by the AppDelegate once the window exists.
     var panel: NotchPanelController?
@@ -26,13 +29,19 @@ final class AppEnvironment: ObservableObject {
         let settings = AppSettings()
         self.settings = settings
         ai = AIViewModel(settings: settings)
+        let streak = StreakStore()
+        self.streak = streak
         let history = BrowsingHistory()
         self.history = history
         browser = BrowserModel(settings: settings, history: history)
+        assignments = AssignmentStore(settings: settings, streak: streak)
+        pomodoro = PomodoroModel(settings: settings, streak: streak)
     }
 
     /// Called once when the app launches.
-    func start() {}
+    func start() {
+        assignments.rescheduleReminders()
+    }
 }
 
 extension View {
@@ -46,5 +55,8 @@ extension View {
             .environmentObject(env.ai)
             .environmentObject(env.history)
             .environmentObject(env.browser)
+            .environmentObject(env.streak)
+            .environmentObject(env.assignments)
+            .environmentObject(env.pomodoro)
     }
 }

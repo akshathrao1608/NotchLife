@@ -16,6 +16,8 @@ struct SettingsView: View {
                 AISettingsCard()
                 BrowserSettingsCard()
                 compactBarCard
+                NotificationsSettingsCard()
+                BackupSettingsCard()
                 accessibilityCard
             }
             .padding(.trailing, 6)

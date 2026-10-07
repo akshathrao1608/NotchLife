@@ -245,6 +245,7 @@ struct AISearchView: View {
 struct ChatBubble: View {
     let message: ChatMessage
     @EnvironmentObject private var notes: NotesStore
+    @EnvironmentObject private var assignments: AssignmentStore
 
     var body: some View {
         switch message.role {
@@ -310,6 +311,21 @@ struct ChatBubble: View {
                     SoundPlayer.play(.success)
                 } label: { Label("Save to notes", systemImage: "note.text.badge.plus") }
                     .buttonStyle(LNButtonStyle())
+                Menu {
+                    if assignments.upcoming.isEmpty {
+                        Text("No assignments yet")
+                    }
+                    ForEach(assignments.upcoming) { assignment in
+                        Button("\(assignment.subject.isEmpty ? "" : assignment.subject + ": ")\(assignment.title)") {
+                            assignments.appendNote(message.text, to: assignment.id)
+                            SoundPlayer.play(.success)
+                        }
+                    }
+                } label: {
+                    Label("Add to assignment", systemImage: "checklist")
+                }
+                .menuStyle(.borderlessButton)
+                .fixedSize()
                 ShareLink(item: message.text) {
                     Label("Share / Apple Notes", systemImage: "square.and.arrow.up")
                 }

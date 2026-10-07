@@ -265,8 +265,3 @@ struct BrowserView: View {
         .frame(maxHeight: .infinity, alignment: .bottom)
     }
 }
-
-/// Placeholder until Step 5 adds assignments. It is replaced with real menu items then.
-struct SaveToAssignmentsMenuItems: View {
-    var body: some View { EmptyView() }
-}

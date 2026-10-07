@@ -82,6 +82,10 @@ struct ExpandedPanelView: View {
             AISearchView()
         case .browser:
             BrowserView()
+        case .assignments:
+            AssignmentsView()
+        case .macFun:
+            PomodoroView()
         case .settings:
             SettingsView()
         default:

@@ -30,6 +30,8 @@ struct CompactChip: View {
 struct CompactBarView: View {
     @EnvironmentObject private var notch: NotchState
     @EnvironmentObject private var settings: AppSettings
+    @EnvironmentObject private var assignments: AssignmentStore
+    @EnvironmentObject private var pomodoro: PomodoroModel
 
     var body: some View {
         let geometry = notch.geometry
@@ -65,6 +67,20 @@ struct CompactBarView: View {
     @ViewBuilder
     private func leftChips(_ prefs: Preferences) -> some View {
         HStack(spacing: 8) {
+            if prefs.showAssignmentChip, let next = assignments.nextDue {
+                let urgent = next.isUrgent()
+                let subject = next.subject.isEmpty ? "Task" : String(next.subject.prefix(4))
+                CompactChip(icon: urgent ? "exclamationmark.triangle.fill" : "book.closed.fill",
+                            text: "\(subject) \(next.dueSummary())",
+                            tint: urgent ? .red : .white,
+                            label: "Next assignment: \(next.title), \(next.isOverdue() ? "overdue" : "due in " + Countdown.short(to: next.due))")
+            }
+            if prefs.showTimerChip, pomodoro.isActive {
+                CompactChip(icon: pomodoro.isRunning ? "timer" : "pause.fill",
+                            text: Countdown.clock(pomodoro.remaining),
+                            tint: pomodoro.phase == .focus ? settings.prefs.theme.accent : .green,
+                            label: "\(pomodoro.phase.title) timer, \(Countdown.clock(pomodoro.remaining)) left")
+            }
             if prefs.notchAnimation != .none {
                 NotchAnimationView(kind: prefs.notchAnimation)
                     .frame(width: 26, height: 14)
@@ -99,12 +115,26 @@ struct CompactBarView: View {
 
 /// The extra row shown while you hover ("preview" mode).
 struct PreviewPeekRow: View {
+    @EnvironmentObject private var assignments: AssignmentStore
+    @EnvironmentObject private var pomodoro: PomodoroModel
+
     var body: some View {
-        HStack {
-            Image(systemName: "hand.tap").font(.system(size: 11))
-            Text("Click to open LifeNotch").lnFont(11, .medium)
+        HStack(spacing: 14) {
+            if let next = assignments.nextDue {
+                Label("\(next.title) · \(next.dueSummary())", systemImage: "checklist")
+                    .foregroundStyle(next.isUrgent() ? Color.red : Color.white)
+                    .lineLimit(1)
+            }
+            if pomodoro.isActive {
+                Label("\(pomodoro.phase.title) \(Countdown.clock(pomodoro.remaining))", systemImage: "timer")
+                    .lineLimit(1)
+            }
+            if assignments.nextDue == nil && !pomodoro.isActive {
+                Label("Click to open LifeNotch", systemImage: "hand.tap")
+            }
         }
-        .foregroundStyle(.white.opacity(0.8))
+        .lnFont(11, .medium)
+        .foregroundStyle(.white.opacity(0.85))
         .frame(maxWidth: .infinity, minHeight: 40)
     }
 }

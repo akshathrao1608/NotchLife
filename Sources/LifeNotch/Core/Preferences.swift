@@ -108,6 +108,7 @@ struct Preferences: Codable, Equatable {
     var shortBreakMinutes = 5
     var longBreakMinutes = 15
     var sessionsBeforeLongBreak = 4
+    var focusNotifications = false   // off: no notification when a session ends
 
     // MARK: Mac Fun
     var ambientVolume = 0.4
