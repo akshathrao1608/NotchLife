@@ -9,7 +9,6 @@ import UserNotifications
 
 enum ConsentTopic: String, CaseIterable, Identifiable {
     case sendAttachmentsToAI
-    case sendPageToAI
     case readClipboard
     case scanFolders
 
@@ -18,7 +17,6 @@ enum ConsentTopic: String, CaseIterable, Identifiable {
     var title: String {
         switch self {
         case .sendAttachmentsToAI: return "Send files and images to your AI provider"
-        case .sendPageToAI: return "Send web page content to your AI provider"
         case .readClipboard: return "Read the clipboard when I press Paste"
         case .scanFolders: return "Look inside Desktop / Downloads when I press Scan"
         }

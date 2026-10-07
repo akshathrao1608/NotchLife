@@ -12,6 +12,8 @@ final class AppEnvironment: ObservableObject {
     let notch = NotchState()
     let notes = NotesStore()
     let ai: AIViewModel
+    let history: BrowsingHistory
+    let browser: BrowserModel
 
     /// Set by the AppDelegate once the window exists.
     var panel: NotchPanelController?
@@ -24,6 +26,9 @@ final class AppEnvironment: ObservableObject {
         let settings = AppSettings()
         self.settings = settings
         ai = AIViewModel(settings: settings)
+        let history = BrowsingHistory()
+        self.history = history
+        browser = BrowserModel(settings: settings, history: history)
     }
 
     /// Called once when the app launches.
@@ -39,5 +44,7 @@ extension View {
             .environmentObject(env.notch)
             .environmentObject(env.notes)
             .environmentObject(env.ai)
+            .environmentObject(env.history)
+            .environmentObject(env.browser)
     }
 }

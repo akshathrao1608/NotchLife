@@ -14,6 +14,7 @@ struct SettingsView: View {
                 appearanceCard
                 behaviourCard
                 AISettingsCard()
+                BrowserSettingsCard()
                 compactBarCard
                 accessibilityCard
             }

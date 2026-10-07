@@ -80,6 +80,8 @@ struct ExpandedPanelView: View {
         switch notch.selectedTab {
         case .ai:
             AISearchView()
+        case .browser:
+            BrowserView()
         case .settings:
             SettingsView()
         default:
