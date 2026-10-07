@@ -18,6 +18,7 @@ final class AppEnvironment: ObservableObject {
     let assignments: AssignmentStore
     let pomodoro: PomodoroModel
     let sports: SportsModel
+    let scores = GameScores()
 
     /// Set by the AppDelegate once the window exists.
     var panel: NotchPanelController?
@@ -62,5 +63,6 @@ extension View {
             .environmentObject(env.assignments)
             .environmentObject(env.pomodoro)
             .environmentObject(env.sports)
+            .environmentObject(env.scores)
     }
 }

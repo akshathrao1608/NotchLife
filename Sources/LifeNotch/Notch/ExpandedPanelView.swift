@@ -86,6 +86,8 @@ struct ExpandedPanelView: View {
             AssignmentsView()
         case .sports:
             SportsView()
+        case .games:
+            GamesView()
         case .macFun:
             PomodoroView()
         case .settings:

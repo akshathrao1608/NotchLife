@@ -33,6 +33,7 @@ struct CompactBarView: View {
     @EnvironmentObject private var assignments: AssignmentStore
     @EnvironmentObject private var pomodoro: PomodoroModel
     @EnvironmentObject private var sports: SportsModel
+    @EnvironmentObject private var scores: GameScores
 
     var body: some View {
         let geometry = notch.geometry
@@ -96,6 +97,12 @@ struct CompactBarView: View {
     @ViewBuilder
     private func rightChips(_ prefs: Preferences) -> some View {
         HStack(spacing: 8) {
+            if prefs.showBestScoreChip {
+                CompactChip(icon: "trophy.fill",
+                            text: scores.bestText(for: prefs.compactGame) ?? "–",
+                            tint: .yellow,
+                            label: "Best \(prefs.compactGame.title) score: \(scores.bestText(for: prefs.compactGame) ?? "none yet")")
+            }
             if prefs.showAIChip {
                 Button { notch.open(.ai) } label: {
                     Image(systemName: "sparkles").font(.system(size: 11, weight: .semibold))
