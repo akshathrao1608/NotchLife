@@ -44,6 +44,63 @@ final class AIViewModel: ObservableObject {
         notice = "Check the question, then press Send. Nothing has been sent yet."
     }
 
+    // MARK: Attachments
+
+    private static let maxAttachments = 5
+
+    /// Adds files (from drag-and-drop or the file picker). Nothing is uploaded yet.
+    func addFiles(_ urls: [URL]) {
+        var problems: [String] = []
+        for url in urls {
+            guard attachments.count < Self.maxAttachments else {
+                problems.append("You can attach up to \(Self.maxAttachments) items.")
+                break
+            }
+            do {
+                attachments.append(try AttachmentLoader.load(url: url))
+            } catch {
+                problems.append(error.localizedDescription)
+            }
+        }
+        notice = problems.isEmpty ? nil : problems.joined(separator: " ")
+    }
+
+    func addImageData(_ data: Data, name: String) {
+        guard attachments.count < Self.maxAttachments else { notice = "You can attach up to \(Self.maxAttachments) items."; return }
+        do {
+            attachments.append(try AttachmentLoader.imageAttachment(data: data, name: name))
+            notice = nil
+        } catch {
+            notice = error.localizedDescription
+        }
+    }
+
+    func remove(_ attachment: AIAttachment) {
+        attachments.removeAll { $0.id == attachment.id }
+    }
+
+    /// Reads the text out of an attached image/PDF on this Mac and puts it in the question box.
+    @MainActor
+    func extractTextLocally(from attachment: AIAttachment) async {
+        notice = "Reading text on your Mac…"
+        do {
+            let text: String
+            switch attachment.kind {
+            case .image: text = try await AttachmentLoader.recognizeText(imageData: attachment.data)
+            case .pdf: text = AttachmentLoader.pdfText(attachment.data)
+            case .text: text = attachment.textContent ?? ""
+            }
+            if text.trimmingCharacters(in: .whitespacesAndNewlines).isEmpty {
+                notice = "No text found in \(attachment.name)."
+            } else {
+                input += (input.isEmpty ? "" : "\n\n") + text
+                notice = "Text from \(attachment.name) was added to your question (read on your Mac, not sent anywhere)."
+            }
+        } catch {
+            notice = error.localizedDescription
+        }
+    }
+
     func newChat() {
         cancel()
         messages = []

@@ -1,4 +1,5 @@
 import SwiftUI
+import UniformTypeIdentifiers
 
 // AISearchView.swift
 // The AI Search tab: pick a mode, type a question, read the answer.
@@ -8,6 +9,7 @@ struct AISearchView: View {
     @EnvironmentObject private var settings: AppSettings
     @EnvironmentObject private var notch: NotchState
     @FocusState private var inputFocused: Bool
+    @State private var isDropTargeted = false
 
     var body: some View {
         VStack(spacing: 8) {
@@ -23,6 +25,86 @@ struct AISearchView: View {
             inputBar
         }
         .onAppear { inputFocused = true }
+        .overlay(
+            RoundedRectangle(cornerRadius: 12, style: .continuous)
+                .stroke(settings.prefs.theme.accent, style: StrokeStyle(lineWidth: 2, dash: [6]))
+                .opacity(isDropTargeted ? 1 : 0)
+                .allowsHitTesting(false)
+        )
+        // Drag files (screenshots, images, PDFs, text files) onto the panel.
+        .dropDestination(for: URL.self) { urls, _ in
+            let files = urls.filter { $0.isFileURL }
+            let links = urls.filter { !$0.isFileURL }
+            if !files.isEmpty { vm.addFiles(files) }
+            for link in links { vm.input += (vm.input.isEmpty ? "" : "\n") + link.absoluteString }
+            return !urls.isEmpty
+        } isTargeted: { isDropTargeted = $0 }
+        // Drag selected text onto the panel.
+        .dropDestination(for: String.self) { strings, _ in
+            vm.input += (vm.input.isEmpty ? "" : "\n") + strings.joined(separator: "\n")
+            return !strings.isEmpty
+        }
+    }
+
+    // MARK: Attachments
+
+    private var attachmentRow: some View {
+        ScrollView(.horizontal, showsIndicators: false) {
+            HStack(spacing: 6) {
+                ForEach(vm.attachments) { attachment in
+                    HStack(spacing: 5) {
+                        if attachment.kind == .image, let image = NSImage(data: attachment.data) {
+                            Image(nsImage: image).resizable().scaledToFill()
+                                .frame(width: 22, height: 22).clipShape(RoundedRectangle(cornerRadius: 4))
+                                .accessibilityHidden(true)
+                        } else {
+                            Image(systemName: attachment.icon)
+                        }
+                        Text(attachment.name).lnFont(11).lineLimit(1).frame(maxWidth: 140)
+                        Button {
+                            Task { await vm.extractTextLocally(from: attachment) }
+                        } label: { Image(systemName: "text.viewfinder") }
+                            .buttonStyle(.plain)
+                            .help("Read the text on your Mac (nothing is sent)")
+                            .accessibilityLabel("Extract text from \(attachment.name) on this Mac")
+                        Button { vm.remove(attachment) } label: { Image(systemName: "xmark.circle.fill") }
+                            .buttonStyle(.plain)
+                            .accessibilityLabel("Remove \(attachment.name)")
+                    }
+                    .padding(.horizontal, 8).padding(.vertical, 4)
+                    .background(Capsule().fill(Color.primary.opacity(0.1)))
+                }
+            }
+        }
+    }
+
+    private func pickFiles() {
+        ModalHelper.bringToFront()
+        let panel = NSOpenPanel()
+        panel.allowsMultipleSelection = true
+        panel.canChooseDirectories = false
+        panel.message = "Choose images, PDFs or text files to attach. Nothing is sent until you press Send."
+        panel.allowedContentTypes = [.image, .pdf, .text, .json, .commaSeparatedText]
+        if panel.runModal() == .OK { vm.addFiles(panel.urls) }
+    }
+
+    private func pasteFromClipboard() {
+        let allowed = ConsentGate.request(
+            .readClipboard,
+            settings: settings,
+            explanation: "LifeNotch will look at your clipboard ONCE, right now, to attach what is on it to your question. It never watches the clipboard in the background."
+        )
+        guard allowed else { return }
+        let board = NSPasteboard.general
+        if let urls = board.readObjects(forClasses: [NSURL.self], options: [.urlReadingFileURLsOnly: true]) as? [URL], !urls.isEmpty {
+            vm.addFiles(urls)
+        } else if let data = board.data(forType: .png) ?? board.data(forType: .tiff) {
+            vm.addImageData(data, name: "Pasted image.png")
+        } else if let text = board.string(forType: .string), !text.isEmpty {
+            vm.input += (vm.input.isEmpty ? "" : "\n") + text
+        } else {
+            vm.notice = "The clipboard has nothing LifeNotch can attach."
+        }
     }
 
     // MARK: Modes
@@ -104,6 +186,7 @@ struct AISearchView: View {
 
     private var inputBar: some View {
         VStack(spacing: 6) {
+            if !vm.attachments.isEmpty { attachmentRow }
             HStack(spacing: 8) {
                 if vm.mode == .homework {
                     Toggle(isOn: $vm.showFullSolution) {
@@ -119,6 +202,9 @@ struct AISearchView: View {
                         .accessibilityLabel("Target language")
                 }
                 Spacer()
+                LNIconButton(systemName: "paperclip", label: "Attach an image, PDF or text file") { pickFiles() }
+                LNIconButton(systemName: "doc.on.clipboard", label: "Paste from clipboard (asks first)") { pasteFromClipboard() }
+                    .help("Tip: press Command-Control-Shift-4 to copy a screenshot area, then press this button.")
                 LNIconButton(systemName: "globe", label: "Search the web for sources", isActive: vm.useWebSearch || vm.mode == .findSources) {
                     vm.useWebSearch.toggle()
                 }
