@@ -35,6 +35,7 @@ struct CompactBarView: View {
     @EnvironmentObject private var sports: SportsModel
     @EnvironmentObject private var scores: GameScores
     @EnvironmentObject private var stats: SystemStatsModel
+    @EnvironmentObject private var messages: MessageHub
 
     var body: some View {
         let geometry = notch.geometry
@@ -98,6 +99,13 @@ struct CompactBarView: View {
     @ViewBuilder
     private func rightChips(_ prefs: Preferences) -> some View {
         HStack(spacing: 8) {
+            if prefs.showMessagesChip && prefs.messagesEnabled {
+                let unread = messages.unreadCount
+                CompactChip(icon: "message.fill",
+                            text: unread > 0 ? "\(unread)" : "",
+                            tint: unread > 0 ? .green : Color.white.opacity(0.55),
+                            label: "\(unread) unread messages")
+            }
             if prefs.showBestScoreChip {
                 CompactChip(icon: "trophy.fill",
                             text: scores.bestText(for: prefs.compactGame) ?? "–",

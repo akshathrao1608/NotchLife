@@ -10,6 +10,20 @@ final class AppDelegate: NSObject, NSApplicationDelegate {
     private var panelController: NotchPanelController?
     private var statusItem: NSStatusItem?
 
+    func applicationWillFinishLaunching(_ notification: Notification) {
+        // Receive lifenotch:// links (see URLCommands.swift).
+        NSAppleEventManager.shared().setEventHandler(self,
+                                                     andSelector: #selector(handleURLEvent(_:withReplyEvent:)),
+                                                     forEventClass: AEEventClass(kInternetEventClass),
+                                                     andEventID: AEEventID(kAEGetURL))
+    }
+
+    @objc private func handleURLEvent(_ event: NSAppleEventDescriptor, withReplyEvent reply: NSAppleEventDescriptor) {
+        guard let text = event.paramDescriptor(forKeyword: AEKeyword(keyDirectObject))?.stringValue,
+              let url = URL(string: text) else { return }
+        DispatchQueue.main.async { URLCommands.handle(url, env: AppEnvironment.shared) }
+    }
+
     func applicationDidFinishLaunching(_ notification: Notification) {
         NSApp.setActivationPolicy(.accessory)
 

@@ -19,6 +19,7 @@ struct SettingsView: View {
                 compactBarCard
                 NotificationsSettingsCard()
                 BackupSettingsCard()
+                PrivacySettingsCard()
                 accessibilityCard
             }
             .padding(.trailing, 6)

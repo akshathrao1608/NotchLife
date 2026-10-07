@@ -82,6 +82,8 @@ struct ExpandedPanelView: View {
             AISearchView()
         case .browser:
             BrowserView()
+        case .messages:
+            MessagesView()
         case .assignments:
             AssignmentsView()
         case .sports:
@@ -102,16 +104,28 @@ struct TabButton: View {
     let tab: NotchTab
     @EnvironmentObject private var notch: NotchState
     @EnvironmentObject private var settings: AppSettings
+    @EnvironmentObject private var messages: MessageHub
     @Environment(\.lnAccent) private var accent
 
     var body: some View {
         let selected = notch.selectedTab == tab
+        let badge = (tab == .messages && settings.prefs.messagesEnabled) ? messages.unreadCount : 0
         Button { notch.selectedTab = tab } label: {
             Image(systemName: tab.icon)
                 .font(.system(size: 13 * settings.textScale, weight: .semibold))
                 .frame(width: 34, height: 26)
                 .foregroundStyle(selected ? Color.black : Color.white.opacity(settings.prefs.highContrast ? 1.0 : 0.72))
                 .background(Capsule().fill(selected ? accent : Color.clear))
+                .overlay(alignment: .topTrailing) {
+                    if badge > 0 {
+                        Text("\(min(badge, 99))")
+                            .font(.system(size: 8, weight: .bold))
+                            .foregroundStyle(.white)
+                            .padding(.horizontal, 3)
+                            .background(Capsule().fill(Color.red))
+                            .offset(x: 2, y: -2)
+                    }
+                }
         }
         .buttonStyle(.plain)
         .help("\(tab.title) (⌘\(tab.number))")

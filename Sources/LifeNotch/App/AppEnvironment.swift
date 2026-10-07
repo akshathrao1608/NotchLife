@@ -23,6 +23,7 @@ final class AppEnvironment: ObservableObject {
     let stats = SystemStatsModel()
     let cleanDesk = CleanDeskModel()
     let ambient: AmbientPlayer
+    let messages: MessageHub
     let clipboard: ClipboardMonitor
     private var cancellables = Set<AnyCancellable>()
 
@@ -47,6 +48,7 @@ final class AppEnvironment: ObservableObject {
         sports = SportsModel(settings: settings)
         ambient = AmbientPlayer(settings: settings)
         clipboard = ClipboardMonitor(settings: settings)
+        messages = MessageHub(settings: settings)
     }
 
     /// Called once when the app launches.
@@ -85,5 +87,6 @@ extension View {
             .environmentObject(env.cleanDesk)
             .environmentObject(env.ambient)
             .environmentObject(env.clipboard)
+            .environmentObject(env.messages)
     }
 }
