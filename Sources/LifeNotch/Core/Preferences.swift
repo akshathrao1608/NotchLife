@@ -97,6 +97,7 @@ struct Preferences: Codable, Equatable {
     var favouriteF1Team = "McLaren"
     var favouriteFootballTeams: [String] = ["Arsenal"]
     var footballLeague = "PL"
+    var sportsPage = "f1"            // "f1" or "football": the last page you looked at
     var sportsNotificationsEnabled = false
     var sportsNotifyMinutesBefore = 30
 

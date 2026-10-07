@@ -17,6 +17,7 @@ final class AppEnvironment: ObservableObject {
     let streak: StreakStore
     let assignments: AssignmentStore
     let pomodoro: PomodoroModel
+    let sports: SportsModel
 
     /// Set by the AppDelegate once the window exists.
     var panel: NotchPanelController?
@@ -36,11 +37,13 @@ final class AppEnvironment: ObservableObject {
         browser = BrowserModel(settings: settings, history: history)
         assignments = AssignmentStore(settings: settings, streak: streak)
         pomodoro = PomodoroModel(settings: settings, streak: streak)
+        sports = SportsModel(settings: settings)
     }
 
     /// Called once when the app launches.
     func start() {
         assignments.rescheduleReminders()
+        sports.start()
     }
 }
 
@@ -58,5 +61,6 @@ extension View {
             .environmentObject(env.streak)
             .environmentObject(env.assignments)
             .environmentObject(env.pomodoro)
+            .environmentObject(env.sports)
     }
 }

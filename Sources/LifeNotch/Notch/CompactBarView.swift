@@ -32,6 +32,7 @@ struct CompactBarView: View {
     @EnvironmentObject private var settings: AppSettings
     @EnvironmentObject private var assignments: AssignmentStore
     @EnvironmentObject private var pomodoro: PomodoroModel
+    @EnvironmentObject private var sports: SportsModel
 
     var body: some View {
         let geometry = notch.geometry
@@ -75,6 +76,10 @@ struct CompactBarView: View {
                             tint: urgent ? .red : .white,
                             label: "Next assignment: \(next.title), \(next.isOverdue() ? "overdue" : "due in " + Countdown.short(to: next.due))")
             }
+            if prefs.showCountdownChip, let info = sports.compactInfo() {
+                CompactChip(icon: info.icon, text: info.text,
+                            tint: info.isDemo ? .orange : .white, label: info.label)
+            }
             if prefs.showTimerChip, pomodoro.isActive {
                 CompactChip(icon: pomodoro.isRunning ? "timer" : "pause.fill",
                             text: Countdown.clock(pomodoro.remaining),
@@ -117,6 +122,8 @@ struct CompactBarView: View {
 struct PreviewPeekRow: View {
     @EnvironmentObject private var assignments: AssignmentStore
     @EnvironmentObject private var pomodoro: PomodoroModel
+    @EnvironmentObject private var sports: SportsModel
+    @EnvironmentObject private var settings: AppSettings
 
     var body: some View {
         HStack(spacing: 14) {
@@ -129,7 +136,12 @@ struct PreviewPeekRow: View {
                 Label("\(pomodoro.phase.title) \(Countdown.clock(pomodoro.remaining))", systemImage: "timer")
                     .lineLimit(1)
             }
-            if assignments.nextDue == nil && !pomodoro.isActive {
+            if settings.prefs.showCountdownChip, let info = sports.compactInfo() {
+                Label(info.text + (info.isDemo ? " (demo)" : ""), systemImage: info.icon)
+                    .foregroundStyle(info.isDemo ? Color.orange : Color.white)
+                    .lineLimit(1)
+            }
+            if assignments.nextDue == nil && !pomodoro.isActive && sports.compactInfo() == nil {
                 Label("Click to open LifeNotch", systemImage: "hand.tap")
             }
         }

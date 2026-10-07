@@ -15,6 +15,7 @@ struct SettingsView: View {
                 behaviourCard
                 AISettingsCard()
                 BrowserSettingsCard()
+                SportsSettingsCard()
                 compactBarCard
                 NotificationsSettingsCard()
                 BackupSettingsCard()
