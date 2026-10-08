@@ -62,6 +62,16 @@ struct SettingsView: View {
         VStack(alignment: .leading, spacing: 8) {
             SectionTitle("Behaviour and shortcuts")
             Toggle("Hover to preview", isOn: $settings.prefs.hoverPreview)
+            if settings.prefs.hoverPreview {
+                HStack {
+                    Text("Wait before reacting").lnFont(12)
+                    Slider(value: $settings.prefs.hoverDelaySeconds, in: 0...2, step: 0.1)
+                        .frame(maxWidth: 200)
+                        .accessibilityLabel("Hover delay in seconds")
+                    Text(String(format: "%.1f s", settings.prefs.hoverDelaySeconds)).lnFont(11).monospacedDigit()
+                }
+                Text("Clicking the notch always opens it straight away.").lnFont(10.5).foregroundStyle(.secondary)
+            }
             Toggle("Close when I click outside the panel", isOn: $settings.prefs.collapseOnOutsideClick)
             Toggle("Global shortcut to open/close the notch", isOn: $settings.prefs.globalHotKeyEnabled)
             if settings.prefs.globalHotKeyEnabled {
@@ -91,10 +101,15 @@ struct SettingsView: View {
         VStack(alignment: .leading, spacing: 6) {
             SectionTitle("Notch size")
             Text("If the bar covers menu-bar items, make it narrower here.").lnFont(10.5).foregroundStyle(.secondary)
-            Toggle("Icons only (no text), keeps the bar narrow", isOn: $settings.prefs.compactIconsOnly)
-            Toggle("Fit the bar to my icons automatically", isOn: Binding(
-                get: { settings.prefs.compactSideWidth == 0 },
-                set: { settings.prefs.compactSideWidth = $0 ? 0 : 70 }
+            Picker("Bar size", selection: $settings.prefs.compactStyle) {
+                ForEach(CompactStyle.allCases) { Text($0.title).tag($0) }
+            }
+            .pickerStyle(.segmented)
+            .frame(maxWidth: 360)
+            Text(settings.prefs.compactStyle.detail).lnFont(10.5).foregroundStyle(.secondary)
+            Toggle("Set an exact width instead", isOn: Binding(
+                get: { settings.prefs.compactSideWidth > 0 },
+                set: { settings.prefs.compactSideWidth = $0 ? 40 : 0 }
             ))
             if settings.prefs.compactSideWidth > 0 {
                 HStack {

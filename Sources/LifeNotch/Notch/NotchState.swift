@@ -71,9 +71,10 @@ final class NotchState: ObservableObject {
     func recomputeCompactWidths(_ p: Preferences) {
         if panelSize != p.panelSize { panelSize = p.panelSize }
 
-        // In icons-only mode every chip is small. (Timer and unread-count keep their numbers.)
+        // Medium shows icons only; Large also shows text. (Timer and unread count keep their numbers.)
+        let iconsOnly = p.compactStyle != .large
         func w(_ full: CGFloat, keepsText: Bool = false) -> CGFloat {
-            (p.compactIconsOnly && !keepsText) ? 22 : full
+            (iconsOnly && !keepsText) ? 22 : full
         }
         var left: [CGFloat] = []
         if p.showAssignmentChip { left.append(w(74)) }
@@ -92,6 +93,7 @@ final class NotchState: ObservableObject {
 
         // Both sides get the SAME width so the gap for the camera notch stays exactly centred.
         var side = max(Self.chipsWidth(left), Self.chipsWidth(right))
+        if let fixed = p.compactStyle.fixedSideWidth { side = fixed }       // Tiny and Small are fixed
         if p.compactSideWidth > 0 { side = CGFloat(p.compactSideWidth) }   // your own width wins
         if side != leftSide { leftSide = side }
         if side != rightSide { rightSide = side }

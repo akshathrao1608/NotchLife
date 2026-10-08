@@ -74,6 +74,48 @@ enum MacFunSection: String, CaseIterable, Identifiable, Codable {
 
 // MARK: - Look and feel
 
+/// How big the slim bar around the camera notch is (when the panel is closed).
+enum CompactStyle: String, CaseIterable, Identifiable, Codable {
+    case tiny, small, medium, large
+    var id: String { rawValue }
+
+    var title: String {
+        switch self {
+        case .tiny: return "Tiny"
+        case .small: return "Small"
+        case .medium: return "Medium"
+        case .large: return "Large"
+        }
+    }
+
+    var detail: String {
+        switch self {
+        case .tiny: return "Just a thin black edge around the camera. No icons (hover to see info)."
+        case .small: return "One icon on each side."
+        case .medium: return "All your icons, no text."
+        case .large: return "All your icons with text."
+        }
+    }
+
+    /// How many icons may show on EACH side of the camera notch.
+    var maxChipsPerSide: Int {
+        switch self {
+        case .tiny: return 0
+        case .small: return 1
+        case .medium, .large: return Int.max
+        }
+    }
+
+    /// Width of each side for the fixed-size styles. nil = fit to the icons.
+    var fixedSideWidth: CGFloat? {
+        switch self {
+        case .tiny: return 14
+        case .small: return 56
+        case .medium, .large: return nil
+        }
+    }
+}
+
 /// How big the OPEN panel is.
 enum PanelSize: String, CaseIterable, Identifiable, Codable {
     case small, normal, large

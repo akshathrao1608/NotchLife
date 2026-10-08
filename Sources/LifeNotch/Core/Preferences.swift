@@ -32,6 +32,8 @@ struct Preferences: Codable, Equatable {
 
     // MARK: Notch behaviour
     var hoverPreview = true
+    /// How long (seconds) your mouse must rest on the notch before it reacts. Clicking is always instant.
+    var hoverDelaySeconds: Double = 1.0
     var collapseOnOutsideClick = true
     var globalHotKeyEnabled = true
     var hotKey: HotKeyChoice = .optionSpace
@@ -51,8 +53,8 @@ struct Preferences: Codable, Equatable {
     var compactGame: GameKind = .reaction
     /// Width of the bar on EACH side of the camera notch, in points. 0 = fit the icons automatically.
     var compactSideWidth: Double = 0
-    /// Show only icons in the bar (no text). Keeps the bar narrow so it doesn't cover menu-bar items.
-    var compactIconsOnly = true
+    /// How big the slim bar is. Small = one icon on each side of the camera notch.
+    var compactStyle: CompactStyle = .small
     /// Size of the open panel.
     var panelSize: PanelSize = .normal
     var showBattery = false      // off until you turn it on

@@ -173,11 +173,14 @@ final class NotchPanelController {
         hoverWork?.cancel()
         let work = DispatchWorkItem { [weak self] in
             guard let self = self, self.env.notch.mode == .collapsed else { return }
+            // Only react if the mouse is STILL on the notch after the wait.
+            guard self.panel.frame.insetBy(dx: -4, dy: -4).contains(NSEvent.mouseLocation) else { return }
             self.setMode(.preview)
             self.startPreviewPoller()
         }
         hoverWork = work
-        DispatchQueue.main.asyncAfter(deadline: .now() + 0.12, execute: work)
+        let delay = max(0, env.settings.prefs.hoverDelaySeconds)
+        DispatchQueue.main.asyncAfter(deadline: .now() + delay, execute: work)
     }
 
     private func hoverExited() {
