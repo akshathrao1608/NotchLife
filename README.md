@@ -76,6 +76,43 @@ open Settings or **Quit**.
 | **Mac Fun** | Pomodoro + study streak, daily quote/F1/football fact + Random Fun, quick launch, notes + optional clipboard history, system dashboard, Clean Desk checklist, ambient sounds, theme/animation picker. |
 | **Settings** | Appearance, themes, animation speed, reduce motion, search engine, favourite teams/driver, AI key, privacy, backup/export, reset, accessibility. |
 
+### More modules (added in v0.2)
+
+Open them from the **grid button** in the top bar, or press **Control + Option + P** for the command palette
+(type to find any tab or action, do a quick sum, search the web, ask the AI, find a file, run a shortcut).
+Choose which tabs stay in the top bar in Settings > "Top bar tabs".
+
+| Module | What it does |
+|---|---|
+| **Home** | Date, weather for a city you type (free Open-Meteo, only the city name is sent), battery in plain words ("Full in 45 min"), what's due, to-dos |
+| **Clipboard** | Search, filter, pin and re-copy text and links (opt-in, ignores password-manager items) |
+| **To-Do** | Quick list with priorities |
+| **Timer** | Countdown presets + custom, stopwatch with laps; the countdown shows beside the notch |
+| **World Clock** | Time in other cities, day/night, difference from yours |
+| **Tools** | Calculator that answers as you type, unit converter, Keep Awake (no system settings changed), colour picker |
+| **File Shelf** | Park files, drag them out later, AirDrop them. Only remembers where files are; never moves or deletes them |
+| **File Search** | Find files and apps with Spotlight, on your Mac |
+| **Snippets** | Saved text; click to copy |
+| **Shortcuts** | Run your own Apple Shortcuts by name |
+| **Translate** | 12 languages with your AI provider, read aloud with the Mac's voices |
+| **2048 and Snake** | Two more mini-games |
+| **More AI providers** | Gemini, Groq, OpenRouter, DeepSeek and **Ollama (runs on your Mac, no key)**, plus Solve / Explain / Hint / Rewrite / Code modes and AI personalities |
+| **More themes** | 16 themes in total |
+
+### Deliberately NOT included (and why)
+
+These ideas are from another notch app's feature list. LifeNotch does not copy that app's code, name or artwork;
+everything here is written independently. Some of its features conflict with LifeNotch's safety rules, so they are left out:
+
+- **Reading other apps' notifications / replying to iMessages**: macOS has no public way; it needs private databases.
+- **Free VPN list, per-app volume and EQ, "Do It" (AI controls your screen), keyboard click sounds in every app,
+  window-drag-to-notch**: these need system extensions, VPN configuration, always-on keyboard monitoring or
+  full screen control. LifeNotch will not change system settings or install drivers.
+- **Screen Time, brightness/volume HUD replacement, live wallpaper**: need private Apple APIs.
+- **Messenger rooms, accounts, product keys, iPhone companion, "Notch AI" included**: need servers that LifeNotch does not run.
+  (LifeNotch has no accounts and no cloud.)
+- **Plugins that run scripts**: running arbitrary scripts is exactly the kind of risk the safety rules forbid.
+
 ### Keyboard shortcuts
 
 | Keys | What |

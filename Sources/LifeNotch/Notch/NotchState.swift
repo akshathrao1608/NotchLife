@@ -17,6 +17,8 @@ final class NotchState: ObservableObject {
     @Published var macFunSection: MacFunSection = .focus
     /// Set by "Random Fun" so the Games tab can jump straight into a game.
     @Published var pendingGame: GameKind?
+    /// True while the command palette is showing.
+    @Published var showPalette = false
     /// How big the open panel is (from Settings).
     @Published var panelSize: PanelSize = .normal
 
@@ -37,6 +39,16 @@ final class NotchState: ObservableObject {
 
     func toggle() {
         request(mode == .expanded ? .collapsed : .expanded)
+    }
+
+    /// Opens the panel with the command palette showing (or closes the palette).
+    func togglePalette() {
+        if mode == .expanded && showPalette {
+            showPalette = false
+        } else {
+            showPalette = true
+            request(.expanded)
+        }
     }
 
     /// The visible size of the black shape for each mode.

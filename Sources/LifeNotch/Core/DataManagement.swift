@@ -54,6 +54,9 @@ enum DataManagement {
         env.history.clear()
         env.clipboard.clear()
         env.messages.wipe()
+        env.todos.reloadFromDisk()
+        env.shelf.clear()
+        env.keepAwake.stop()
         NotificationManager.shared.replaceAll(prefix: "assignment.", with: [])
         NotificationManager.shared.replaceAll(prefix: "sports.", with: [])
         if alsoRemoveKeys {

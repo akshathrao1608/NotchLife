@@ -41,6 +41,7 @@ struct CompactBarView: View {
     @EnvironmentObject private var scores: GameScores
     @EnvironmentObject private var stats: SystemStatsModel
     @EnvironmentObject private var messages: MessageHub
+    @EnvironmentObject private var toolTimer: ToolTimerModel
 
     var body: some View {
         let geometry = notch.geometry
@@ -97,6 +98,15 @@ struct CompactBarView: View {
                             tint: pomodoro.phase == .focus ? prefs.theme.accent : .green,
                             keepsText: true,
                             label: "\(pomodoro.phase.title) timer, \(Countdown.clock(pomodoro.remaining)) left")
+            ))
+        }
+        if prefs.showTimerChip, toolTimer.countdownActive {
+            items.append(AnyView(
+                CompactChip(icon: toolTimer.countdownRunning ? "hourglass" : "pause.fill",
+                            text: Countdown.clock(toolTimer.remaining),
+                            tint: .orange,
+                            keepsText: true,
+                            label: "Countdown, \(Countdown.clock(toolTimer.remaining)) left")
             ))
         }
         if prefs.showAssignmentChip, let next = assignments.nextDue {

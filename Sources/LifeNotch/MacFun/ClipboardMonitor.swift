@@ -13,6 +13,27 @@ struct ClipboardItem: Identifiable, Codable, Equatable {
     var id = UUID()
     var text: String
     var date = Date()
+    var pinned = false
+
+    init(text: String) {
+        self.text = text
+    }
+
+    // Older saved lists don't have "pinned", so read it only if it is there.
+    init(from decoder: Decoder) throws {
+        let c = try decoder.container(keyedBy: CodingKeys.self)
+        id = try c.decodeIfPresent(UUID.self, forKey: .id) ?? UUID()
+        text = try c.decode(String.self, forKey: .text)
+        date = try c.decodeIfPresent(Date.self, forKey: .date) ?? Date()
+        pinned = try c.decodeIfPresent(Bool.self, forKey: .pinned) ?? false
+    }
+
+    var isLink: Bool {
+        let t = text.trimmingCharacters(in: .whitespacesAndNewlines)
+        guard !t.contains(" "), !t.contains("\n"), let url = URL(string: t),
+              let scheme = url.scheme?.lowercased() else { return false }
+        return (scheme == "http" || scheme == "https") && url.host != nil
+    }
 }
 
 final class ClipboardMonitor: ObservableObject {
@@ -68,6 +89,12 @@ final class ClipboardMonitor: ObservableObject {
         lastChangeCount = NSPasteboard.general.changeCount
     }
 
+    func togglePin(_ item: ClipboardItem) {
+        guard let index = items.firstIndex(where: { $0.id == item.id }) else { return }
+        items[index].pinned.toggle()
+        persistIfNeeded()
+    }
+
     func remove(_ item: ClipboardItem) {
         items.removeAll { $0.id == item.id }
         persistIfNeeded()
@@ -82,9 +109,18 @@ final class ClipboardMonitor: ObservableObject {
         guard let text = board.string(forType: .string)?.trimmingCharacters(in: .whitespacesAndNewlines),
               !text.isEmpty else { return }
         let clipped = String(text.prefix(2000))
-        items.removeAll { $0.text == clipped }
+        if let existing = items.firstIndex(where: { $0.text == clipped }) {
+            if items[existing].pinned { return }
+            items.remove(at: existing)
+        }
         items.insert(ClipboardItem(text: clipped), at: 0)
-        if items.count > 25 { items.removeLast(items.count - 25) }
+        // Keep at most 25 un-pinned items. Pinned items are never dropped.
+        var unpinned = 0
+        items = items.filter { item in
+            if item.pinned { return true }
+            unpinned += 1
+            return unpinned <= 25
+        }
         persistIfNeeded()
     }
 

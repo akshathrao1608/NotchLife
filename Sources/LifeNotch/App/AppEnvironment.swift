@@ -24,6 +24,12 @@ final class AppEnvironment: ObservableObject {
     let cleanDesk = CleanDeskModel()
     let ambient: AmbientPlayer
     let messages: MessageHub
+    let todos = TodoStore()
+    let keepAwake = KeepAwakeModel()
+    let shelf = ShelfStore()
+    let fileSearch = FileSearchModel()
+    let weather = WeatherModel()
+    let toolTimer: ToolTimerModel
     let clipboard: ClipboardMonitor
     private var cancellables = Set<AnyCancellable>()
 
@@ -49,6 +55,7 @@ final class AppEnvironment: ObservableObject {
         ambient = AmbientPlayer(settings: settings)
         clipboard = ClipboardMonitor(settings: settings)
         messages = MessageHub(settings: settings)
+        toolTimer = ToolTimerModel(settings: settings)
     }
 
     /// Called once when the app launches.
@@ -88,5 +95,11 @@ extension View {
             .environmentObject(env.ambient)
             .environmentObject(env.clipboard)
             .environmentObject(env.messages)
+            .environmentObject(env.todos)
+            .environmentObject(env.keepAwake)
+            .environmentObject(env.shelf)
+            .environmentObject(env.fileSearch)
+            .environmentObject(env.weather)
+            .environmentObject(env.toolTimer)
     }
 }

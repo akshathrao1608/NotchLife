@@ -29,11 +29,7 @@ final class AIViewModel: ObservableObject {
     var provider: AIProviderKind { settings.prefs.aiProvider }
     var hasKey: Bool { AIKeys.key(for: provider) != nil }
 
-    private var modelName: String {
-        let value = provider == .anthropic ? settings.prefs.anthropicModel : settings.prefs.openAIModel
-        let trimmed = value.trimmingCharacters(in: .whitespaces)
-        return trimmed.isEmpty ? provider.defaultModel : trimmed
-    }
+    private var modelName: String { settings.prefs.modelName(for: provider) }
 
     // MARK: Other tabs can pre-fill a question (it is NEVER sent automatically)
 
@@ -133,7 +129,7 @@ final class AIViewModel: ObservableObject {
             return
         }
 
-        if !attachments.isEmpty {
+        if !attachments.isEmpty && !provider.isLocal {
             let names = attachments.map { $0.name }.joined(separator: ", ")
             let allowed = ConsentGate.request(
                 .sendAttachmentsToAI,
@@ -144,7 +140,11 @@ final class AIViewModel: ObservableObject {
         }
 
         let sentAttachments = attachments
-        let webSearch = useWebSearch || mode == .findSources
+        let wantsSearch = useWebSearch || mode == .findSources
+        let webSearch = wantsSearch && provider.supportsWebSearch
+        let searchNote: String? = (wantsSearch && !provider.supportsWebSearch)
+            ? "Web search isn't available with \(provider.title). Switch to Claude or ChatGPT for sources."
+            : nil
 
         var turns: [AITurn] = []
         for message in messages.suffix(12) {
@@ -160,7 +160,8 @@ final class AIViewModel: ObservableObject {
             system: AIPrompts.system(mode: mode,
                                      showFullSolution: showFullSolution,
                                      translateTo: settings.prefs.aiTranslateTarget,
-                                     webSearch: webSearch),
+                                     webSearch: webSearch,
+                                     persona: settings.prefs.aiPersona),
             turns: turns,
             model: modelName,
             useWebSearch: webSearch
@@ -172,10 +173,10 @@ final class AIViewModel: ObservableObject {
                                     modeTitle: mode.title))
         input = ""
         attachments = []
-        notice = nil
+        notice = searchNote
         isLoading = true
 
-        let client: AIClient = (provider == .anthropic) ? AnthropicClient() : OpenAIClient()
+        let client: AIClient = provider.makeClient()
         do {
             let response = try await client.complete(request, apiKey: apiKey)
             messages.append(ChatMessage(role: .assistant,

@@ -51,8 +51,20 @@ final class ModelTests: XCTestCase {
         XCTAssertFalse(teamMatches(favourite: "", name: "Arsenal FC", short: "Arsenal"))
     }
 
-    func testTabNumbersAreOneToEight() {
-        XCTAssertEqual(NotchTab.allCases.map { $0.number }, Array(1...8))
+    func testCoreTabsAreTheOriginalEight() {
+        XCTAssertEqual(NotchTab.core.count, 8)
+        XCTAssertEqual(Preferences().pinnedTabs, NotchTab.core)
+        XCTAssertTrue(Set(NotchTab.core).isSubset(of: Set(NotchTab.allCases)))
+    }
+
+    func testEveryProviderHasAModelAndKeyRule() {
+        for provider in AIProviderKind.allCases {
+            XCTAssertFalse(provider.defaultModel.isEmpty)
+            XCTAssertEqual(Preferences().modelName(for: provider), provider.defaultModel)
+            if let base = provider.compatibleBaseURL { XCTAssertNotNil(URL(string: base)) }
+        }
+        XCTAssertFalse(AIProviderKind.ollama.needsKey)
+        XCTAssertTrue(AIProviderKind.gemini.needsKey)
     }
 
     func testPreferencesRoundTripAndDefaults() throws {
@@ -136,5 +148,75 @@ final class GameTests: XCTestCase {
         XCTAssertEqual(Penalty.outcome(shot: .left, keeper: .left, wide: false), .saved)
         XCTAssertEqual(Penalty.outcome(shot: .left, keeper: .right, wide: false), .goal)
         XCTAssertEqual(Penalty.outcome(shot: .centre, keeper: .left, wide: true), .missed)
+    }
+}
+
+final class ModuleTests: XCTestCase {
+    func testCalculator() {
+        XCTAssertEqual(Calculator.evaluate("(12.5 + 7) × 3"), 58.5)
+        XCTAssertEqual(Calculator.evaluate("2^3^2"), 512)            // right-associative
+        XCTAssertEqual(Calculator.evaluate("-3 + 5"), 2)
+        XCTAssertEqual(Calculator.evaluate("-2^2"), -4)
+        XCTAssertEqual(Calculator.evaluate("50%"), 0.5)
+        XCTAssertEqual(Calculator.evaluate("sqrt(16) + abs(-2)"), 6)
+        XCTAssertNil(Calculator.evaluate("1/0"))
+        XCTAssertNil(Calculator.evaluate("2 +"))
+        XCTAssertNil(Calculator.evaluate("hello"))
+        XCTAssertNil(Calculator.evaluate("rm -rf /"))
+        XCTAssertEqual(Calculator.format(4.0), "4")
+        XCTAssertEqual(Calculator.format(0.5), "0.5")
+    }
+
+    func testUnitConversion() {
+        let km = UnitCategory.length.units.first { $0.name == "Kilometres" }!.unit
+        let m = UnitCategory.length.units.first { $0.name == "Metres" }!.unit
+        XCTAssertEqual(UnitCategory.convert(2, from: km, to: m), 2000, accuracy: 0.001)
+        let c = UnitCategory.temperature.units.first { $0.name == "Celsius" }!.unit
+        let f = UnitCategory.temperature.units.first { $0.name == "Fahrenheit" }!.unit
+        XCTAssertEqual(UnitCategory.convert(100, from: c, to: f), 212, accuracy: 0.001)
+    }
+
+    func testBoard2048() {
+        XCTAssertEqual(Board2048.slide([2, 2, 2, 2]).line, [4, 4, 0, 0])
+        XCTAssertEqual(Board2048.slide([2, 2, 4, 0]).line, [4, 4, 0, 0])
+        XCTAssertEqual(Board2048.slide([0, 2, 0, 2]).line, [4, 0, 0, 0])
+        XCTAssertEqual(Board2048.slide([4, 2, 2, 8]).gained, 4)
+        var board = Board2048()
+        board.cells[0] = [2, 0, 0, 2]
+        XCTAssertTrue(board.move(.left))
+        XCTAssertEqual(board.cells[0], [4, 0, 0, 0])
+        XCTAssertEqual(board.score, 4)
+        board.cells[0] = [2, 4, 8, 16]
+        board.cells[1] = [4, 8, 16, 32]
+        board.cells[2] = [8, 16, 32, 64]
+        board.cells[3] = [16, 32, 64, 128]
+        XCTAssertFalse(board.hasMoves)
+    }
+
+    func testSnake() {
+        var generator = SystemRandomNumberGenerator()
+        var state = SnakeState()
+        state.food = GridPoint(x: 6, y: 6)
+        state.step(using: &generator)                       // moves right, eats the food
+        XCTAssertEqual(state.score, 1)
+        XCTAssertEqual(state.body.count, 4)
+        state.turn(to: GridPoint(x: -1, y: 0))              // U-turn is ignored
+        XCTAssertEqual(state.queued, GridPoint(x: 1, y: 0))
+        state.body = [GridPoint(x: 19, y: 0)]
+        state.direction = GridPoint(x: 1, y: 0)
+        state.queued = GridPoint(x: 1, y: 0)
+        state.step(using: &generator)                       // hits the wall
+        XCTAssertFalse(state.alive)
+    }
+
+    func testStopwatchText() {
+        XCTAssertEqual(ToolTimerModel.stopwatchText(65.34), "01:05.3")
+        XCTAssertEqual(ToolTimerModel.stopwatchText(3725.0), "1:02:05.0")
+    }
+
+    func testWeatherCodes() {
+        XCTAssertEqual(WeatherModel.describe(code: 0, isDay: true).1, "Clear")
+        XCTAssertEqual(WeatherModel.describe(code: 63, isDay: true).1, "Rain")
+        XCTAssertEqual(WeatherModel.describe(code: 95, isDay: false).1, "Thunderstorm")
     }
 }

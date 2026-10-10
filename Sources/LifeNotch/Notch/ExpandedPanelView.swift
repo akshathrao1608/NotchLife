@@ -28,8 +28,10 @@ struct ExpandedPanelView: View {
                         Text(notch.selectedTab.title).lnFont(15, .bold)
                             .accessibilityAddTraits(.isHeader)
                         Spacer()
-                        Text("⌘\(notch.selectedTab.number)").lnFont(10).foregroundStyle(.secondary)
-                            .accessibilityHidden(true)
+                        if let index = settings.prefs.pinnedTabs.firstIndex(of: notch.selectedTab) {
+                            Text("⌘\(index + 1)").lnFont(10).foregroundStyle(.secondary)
+                                .accessibilityHidden(true)
+                        }
                     }
                     tabContent
                         .frame(maxWidth: .infinity, maxHeight: .infinity, alignment: .top)
@@ -37,6 +39,14 @@ struct ExpandedPanelView: View {
                 .padding(.horizontal, 26)
                 .padding(.top, 8)
                 .padding(.bottom, 20)
+
+                if notch.showPalette {
+                    PaletteView()
+                        .padding(.horizontal, 22)
+                        .padding(.top, 6)
+                        .padding(.bottom, 16)
+                        .transition(.opacity)
+                }
             }
             .environment(\.colorScheme, bodyScheme)
             .frame(maxWidth: .infinity, maxHeight: .infinity)
@@ -46,22 +56,32 @@ struct ExpandedPanelView: View {
     // MARK: Header
 
     private func header(_ geometry: NotchGeometry) -> some View {
-        let tabs = NotchTab.allCases
-        let half = tabs.count / 2
+        let tabs = settings.prefs.pinnedTabs
+        let half = (tabs.count + 1) / 2
         return HStack(spacing: 0) {
-            HStack(spacing: 4) {
+            HStack(spacing: 2) {
                 ForEach(Array(tabs.prefix(half))) { TabButton(tab: $0) }
             }
             .frame(maxWidth: .infinity, alignment: .trailing)
 
             Color.clear.frame(width: geometry.notchWidth)
 
-            HStack(spacing: 4) {
+            HStack(spacing: 2) {
                 ForEach(Array(tabs.suffix(from: half))) { TabButton(tab: $0) }
+                Button { notch.showPalette.toggle() } label: {
+                    Image(systemName: "square.grid.2x2.fill")
+                        .font(.system(size: 12, weight: .bold))
+                        .frame(width: 30, height: 26)
+                        .foregroundStyle(notch.showPalette ? Color.black : Color.white.opacity(0.8))
+                        .background(Capsule().fill(notch.showPalette ? Color.white.opacity(0.9) : Color.clear))
+                }
+                .buttonStyle(.plain)
+                .help("All modules and search (Control+Option+P)")
+                .accessibilityLabel("All modules and command palette")
                 Button { notch.collapse() } label: {
                     Image(systemName: "chevron.up")
                         .font(.system(size: 12, weight: .bold))
-                        .frame(width: 30, height: 26)
+                        .frame(width: 26, height: 26)
                         .foregroundStyle(Color.white.opacity(0.7))
                 }
                 .buttonStyle(.plain)
@@ -70,7 +90,7 @@ struct ExpandedPanelView: View {
             }
             .frame(maxWidth: .infinity, alignment: .leading)
         }
-        .padding(.horizontal, 26)
+        .padding(.horizontal, 22)
     }
 
     // MARK: Tab content
@@ -78,22 +98,25 @@ struct ExpandedPanelView: View {
     @ViewBuilder
     private var tabContent: some View {
         switch notch.selectedTab {
-        case .ai:
-            AISearchView()
-        case .browser:
-            BrowserView()
-        case .messages:
-            MessagesView()
-        case .assignments:
-            AssignmentsView()
-        case .sports:
-            SportsView()
-        case .games:
-            GamesView()
-        case .macFun:
-            MacFunView()
-        case .settings:
-            SettingsView()
+        case .ai: AISearchView()
+        case .browser: BrowserView()
+        case .messages: MessagesView()
+        case .assignments: AssignmentsView()
+        case .sports: SportsView()
+        case .games: GamesView()
+        case .macFun: MacFunView()
+        case .settings: SettingsView()
+        case .home: HomeView()
+        case .clipboard: ClipboardView()
+        case .todo: TodoView()
+        case .timer: TimerToolView()
+        case .world: WorldClockView()
+        case .tools: ToolsView()
+        case .shelf: ShelfView()
+        case .search: FileSearchView()
+        case .snippets: SnippetsView()
+        case .shortcuts: ShortcutsView()
+        case .translate: TranslateView()
         }
     }
 }
@@ -111,7 +134,7 @@ struct TabButton: View {
         Button { notch.selectedTab = tab } label: {
             Image(systemName: tab.icon)
                 .font(.system(size: 13 * settings.textScale, weight: .semibold))
-                .frame(width: 34, height: 26)
+                .frame(width: 30, height: 26)
                 .foregroundStyle(selected ? Color.black : Color.white.opacity(settings.prefs.highContrast ? 1.0 : 0.72))
                 .background(Capsule().fill(selected ? accent : Color.clear))
                 .overlay(alignment: .topTrailing) {
@@ -126,8 +149,13 @@ struct TabButton: View {
                 }
         }
         .buttonStyle(.plain)
-        .help("\(tab.title) (⌘\(tab.number))")
+        .help(shortcutHelp)
         .accessibilityLabel(tab.title)
         .accessibilityAddTraits(selected ? .isSelected : [])
+    }
+
+    private var shortcutHelp: String {
+        if let index = settings.prefs.pinnedTabs.firstIndex(of: tab) { return "\(tab.title) (⌘\(index + 1))" }
+        return tab.title
     }
 }

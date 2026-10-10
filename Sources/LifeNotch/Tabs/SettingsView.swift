@@ -13,6 +13,7 @@ struct SettingsView: View {
             VStack(alignment: .leading, spacing: 12) {
                 appearanceCard
                 behaviourCard
+                ModulesSettingsCard()
                 AISettingsCard()
                 BrowserSettingsCard()
                 SportsSettingsCard()

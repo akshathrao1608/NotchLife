@@ -12,7 +12,10 @@ extension NotchTab: AppEnum {
     static let typeDisplayRepresentation: TypeDisplayRepresentation = "LifeNotch tab"
     static let caseDisplayRepresentations: [NotchTab: DisplayRepresentation] = [
         .ai: "AI Search", .browser: "Browser", .messages: "Messages", .assignments: "Assignments",
-        .sports: "Sports", .games: "Mini Games", .macFun: "Mac Fun", .settings: "Settings"
+        .sports: "Sports", .games: "Mini Games", .macFun: "Mac Fun", .settings: "Settings",
+        .home: "Home", .clipboard: "Clipboard", .todo: "To-Do", .timer: "Timer", .world: "World Clock",
+        .tools: "Tools", .shelf: "File Shelf", .search: "File Search", .snippets: "Snippets",
+        .shortcuts: "Shortcuts", .translate: "Translate"
     ]
 }
 

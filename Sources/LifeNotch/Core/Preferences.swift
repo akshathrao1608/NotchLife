@@ -11,6 +11,12 @@ struct PinnedSite: Codable, Identifiable, Equatable {
     var url: String
 }
 
+struct Snippet: Codable, Identifiable, Equatable {
+    var id = UUID()
+    var title: String
+    var text: String
+}
+
 struct QuickLaunchItem: Codable, Identifiable, Equatable {
     enum Kind: String, Codable { case app, website }
     var id = UUID()
@@ -39,6 +45,9 @@ struct Preferences: Codable, Equatable {
     var hotKey: HotKeyChoice = .optionSpace
     var tabShortcutsEnabled = true
     var lastTab: NotchTab = .ai
+    /// The tabs shown in the top bar (the first half left of the camera, the rest on the right).
+    var pinnedTabs: [NotchTab] = NotchTab.core
+    var paletteHotKeyEnabled = true   // Control + Option + P opens the command palette
     var lastMacFunSection: MacFunSection = .focus
 
     // MARK: Compact bar (what shows beside the notch)
@@ -82,6 +91,9 @@ struct Preferences: Codable, Equatable {
     var anthropicModel = AIProviderKind.anthropic.defaultModel
     var openAIModel = AIProviderKind.openai.defaultModel
     var aiWebSearchDefault = false
+    /// Model names for the providers other than Anthropic/OpenAI, keyed by provider.
+    var aiModelByProvider: [String: String] = [:]
+    var aiPersona: AIPersona = .standard
     var aiRememberChat = false          // off: chats vanish when you quit
     var aiTranslateTarget = "Spanish"
     var storeAttachmentsLocally = false // off: attachments are never saved by LifeNotch
@@ -109,6 +121,12 @@ struct Preferences: Codable, Equatable {
     var sportsNotificationsEnabled = false
     var sportsNotifyMinutesBefore = 30
 
+    // MARK: More modules
+    var weatherCity = ""
+    var worldClocks: [String] = ["Europe/London", "America/New_York", "Asia/Tokyo"]
+    var snippets: [Snippet] = []
+    var shortcutNames: [String] = []
+
     // MARK: Games & sound
     var soundMuted = false
 
@@ -124,6 +142,18 @@ struct Preferences: Codable, Equatable {
     var quickLaunch: [QuickLaunchItem] = []
     var completionSounds = true
     var cleanDeskChecked: [String] = []
+
+    /// The model name to use for a provider (falls back to a sensible default).
+    func modelName(for provider: AIProviderKind) -> String {
+        let value: String
+        switch provider {
+        case .anthropic: value = anthropicModel
+        case .openai: value = openAIModel
+        default: value = aiModelByProvider[provider.rawValue] ?? ""
+        }
+        let trimmed = value.trimmingCharacters(in: .whitespaces)
+        return trimmed.isEmpty ? provider.defaultModel : trimmed
+    }
 
     // MARK: Loading / saving
 

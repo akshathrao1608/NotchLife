@@ -1,6 +1,7 @@
 import AppKit
 import SwiftUI
 import Combine
+import Carbon.HIToolbox
 
 // NotchPanelController.swift
 // Owns the real macOS window and decides WHEN it opens, closes, grows and shrinks.
@@ -17,7 +18,9 @@ final class NotchPanelController {
     let panel: NotchPanel
 
     private let container = NotchContainerView()
-    private let hotKey = HotKeyManager()
+    private let hotKey = HotKeyManager(identifier: 1)
+    private let paletteHotKey = HotKeyManager(identifier: 2)
+    private var paletteHotKeyRegistered = false
     private var cancellables = Set<AnyCancellable>()
 
     private var generation = 0
@@ -53,6 +56,7 @@ final class NotchPanelController {
         env.notch.onRequestMode = { [weak self] mode in self?.setMode(mode) }
 
         hotKey.onTrigger = { [weak self] in self?.env.notch.toggle() }
+        paletteHotKey.onTrigger = { [weak self] in self?.env.notch.togglePalette() }
 
         // React to settings changes (compact bar width, shortcut choice).
         env.settings.$prefs
@@ -115,6 +119,15 @@ final class NotchPanelController {
     }
 
     private func prefsChanged(_ prefs: Preferences) {
+        // Control + Option + P opens the command palette from any app.
+        if prefs.paletteHotKeyEnabled != paletteHotKeyRegistered {
+            paletteHotKeyRegistered = prefs.paletteHotKeyEnabled
+            if prefs.paletteHotKeyEnabled {
+                paletteHotKey.register(keyCode: UInt32(kVK_ANSI_P), modifiers: UInt32(controlKey | optionKey))
+            } else {
+                paletteHotKey.unregister()
+            }
+        }
         env.notch.recomputeCompactWidths(prefs)
         panel.setFrame(frame(for: env.notch.mode, on: targetScreen()), display: true)
         if registeredHotKey != prefs.hotKey || registeredHotKeyEnabled != prefs.globalHotKeyEnabled {
@@ -234,7 +247,11 @@ final class NotchPanelController {
 
         // Escape closes the panel.
         if event.keyCode == 53 {
-            setMode(.collapsed)
+            if env.notch.showPalette {
+                env.notch.showPalette = false     // Esc closes the palette first
+            } else {
+                setMode(.collapsed)
+            }
             return true
         }
 
@@ -258,8 +275,10 @@ final class NotchPanelController {
 
         // Command + 1...8 switches tabs; Command + C/V/X/A/Z are forwarded to the focused field.
         if flags == .command, let chars = event.charactersIgnoringModifiers {
-            if let digit = Int(chars), digit >= 1, digit <= NotchTab.allCases.count {
-                env.notch.selectedTab = NotchTab.allCases[digit - 1]
+            let pinned = prefs.pinnedTabs
+            if let digit = Int(chars), digit >= 1, digit <= pinned.count {
+                env.notch.selectedTab = pinned[digit - 1]
+                env.notch.showPalette = false
                 return true
             }
             switch chars {

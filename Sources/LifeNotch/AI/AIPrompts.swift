@@ -28,10 +28,37 @@ enum AIPrompts {
     - You are an AI. Do not claim to be human, and do not ask for personal information.
     """
 
-    static func system(mode: AIMode, showFullSolution: Bool, translateTo: String, webSearch: Bool) -> String {
+    static func system(mode: AIMode, showFullSolution: Bool, translateTo: String, webSearch: Bool, persona: AIPersona = .standard) -> String {
         var text = base + "\n\n"
 
         switch mode {
+        case .solve:
+            text += """
+            MODE: Solve. Solve the problem completely, step by step, explaining each step briefly and keeping units. \
+            Finish with a clearly marked line "Final answer: ...". The "Short answer" can state the result.
+            """
+        case .explain:
+            text += """
+            MODE: Explain. Explain the idea clearly for a curious high-school student: what it is, how it works, \
+            and one concrete example. Mention common misunderstandings.
+            """
+        case .hint:
+            text += """
+            MODE: Hint. Do NOT give the final answer or the full method. Give three progressive hints labelled \
+            "Hint 1", "Hint 2", "Hint 3", each a little more helpful than the last. The "Short answer" should be one \
+            sentence saying what kind of problem this is. Do not use the Verified section.
+            """
+        case .rewrite:
+            text += """
+            MODE: Rewrite. Do NOT use the labelled sections. Rewrite the student's text so it is clearer and better \
+            written while keeping the meaning and their voice. Reply with "Rewrite:" followed by the new text, then a short \
+            "What I changed" list.
+            """
+        case .code:
+            text += """
+            MODE: Code. The student pastes code, or an error message or screenshot of one. Explain what it does or \
+            what the error means, find the cause, and show a corrected version in a fenced code block. Mention how to test it.
+            """
         case .explainSimply:
             text += """
             MODE: Explain simply. Explain as if to a smart 12-year-old. Use an everyday analogy or example. \
@@ -84,6 +111,8 @@ enum AIPrompts {
             Keep a running score ("3/5"). Never reveal an answer before the student has tried.
             """
         }
+
+        if !persona.instruction.isEmpty { text += "\n\n" + persona.instruction }
 
         if webSearch {
             text += "\n\nWeb search is ON. Use it when facts may be recent or need checking, and cite what you used."

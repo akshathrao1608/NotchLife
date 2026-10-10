@@ -17,6 +17,8 @@ struct GameScoresData: Codable, Equatable {
     var penaltyBestGoals: Int?
     var f1BestMs: Int?
     var wordRushBest: Int?
+    var best2048: Int?
+    var bestSnake: Int?
 }
 
 final class GameScores: ObservableObject {
@@ -90,6 +92,22 @@ final class GameScores: ObservableObject {
         return true
     }
 
+    @discardableResult
+    func submit2048(score: Int) -> Bool {
+        guard score > (data.best2048 ?? 0) else { return false }
+        data.best2048 = score
+        save()
+        return true
+    }
+
+    @discardableResult
+    func submitSnake(score: Int) -> Bool {
+        guard score > (data.bestSnake ?? 0) else { return false }
+        data.bestSnake = score
+        save()
+        return true
+    }
+
     /// Short text for the compact bar and the game cards. nil = no score yet.
     func bestText(for game: GameKind) -> String? {
         switch game {
@@ -98,6 +116,8 @@ final class GameScores: ObservableObject {
         case .memory: return data.memoryBestMoves.map { "\($0) moves" }
         case .penalty: return data.penaltyBestGoals.map { "\($0)/5" }
         case .wordRush: return data.wordRushBest.map { "\($0) pts" }
+        case .game2048: return data.best2048.map { "\($0) pts" }
+        case .snake: return data.bestSnake.map { "\($0) apples" }
         case .maths:
             guard let best = data.mathsBest.values.max() else { return nil }
             return "\(best) right"

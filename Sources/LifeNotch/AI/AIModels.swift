@@ -97,6 +97,8 @@ struct ChatMessage: Identifiable, Codable, Equatable {
 
 enum AIKeys {
     static func key(for provider: AIProviderKind) -> String? {
+        // Ollama runs on this Mac and needs no key.
+        if !provider.needsKey { return "local" }
         let value = KeychainStore.get(account: provider.keychainAccount)
         return (value?.isEmpty == false) ? value : nil
     }

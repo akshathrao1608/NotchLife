@@ -32,19 +32,30 @@ enum HotKeyChoice: String, CaseIterable, Identifiable, Codable {
 final class HotKeyManager {
     var onTrigger: (() -> Void)?
 
+    /// Each shortcut gets its own number so several can live side by side.
+    private let identifier: UInt32
     private var hotKeyRef: EventHotKeyRef?
     private var handlerRef: EventHandlerRef?
+
+    init(identifier: UInt32 = 1) {
+        self.identifier = identifier
+    }
 
     deinit { unregister() }
 
     /// Registers (or re-registers) the shortcut. Returns false if another app already owns it.
     @discardableResult
     func register(_ choice: HotKeyChoice) -> Bool {
+        register(keyCode: choice.keyCode, modifiers: choice.carbonModifiers)
+    }
+
+    @discardableResult
+    func register(keyCode: UInt32, modifiers: UInt32) -> Bool {
         unregister()
         installHandlerIfNeeded()
-        let hotKeyID = EventHotKeyID(signature: OSType(0x4C4E5443), id: 1) // 'LNTC'
-        let status = RegisterEventHotKey(choice.keyCode,
-                                         choice.carbonModifiers,
+        let hotKeyID = EventHotKeyID(signature: OSType(0x4C4E5443), id: identifier) // 'LNTC'
+        let status = RegisterEventHotKey(keyCode,
+                                         modifiers,
                                          hotKeyID,
                                          GetApplicationEventTarget(),
                                          0,
@@ -63,9 +74,20 @@ final class HotKeyManager {
         guard handlerRef == nil else { return }
         var spec = EventTypeSpec(eventClass: OSType(kEventClassKeyboard),
                                  eventKind: UInt32(kEventHotKeyPressed))
-        InstallEventHandler(GetApplicationEventTarget(), { _, _, userData in
-            guard let userData = userData else { return noErr }
+        InstallEventHandler(GetApplicationEventTarget(), { _, event, userData in
+            guard let event = event, let userData = userData else { return OSStatus(eventNotHandledErr) }
+            // Which shortcut was pressed? Ignore the ones that belong to another manager.
+            var pressed = EventHotKeyID()
+            let status = GetEventParameter(event,
+                                           EventParamName(kEventParamDirectObject),
+                                           EventParamType(typeEventHotKeyID),
+                                           nil,
+                                           MemoryLayout<EventHotKeyID>.size,
+                                           nil,
+                                           &pressed)
+            guard status == noErr else { return status }
             let manager = Unmanaged<HotKeyManager>.fromOpaque(userData).takeUnretainedValue()
+            guard pressed.id == manager.identifier else { return OSStatus(eventNotHandledErr) }
             DispatchQueue.main.async { manager.onTrigger?() }
             return noErr
         }, 1, &spec, Unmanaged.passUnretained(self).toOpaque(), &handlerRef)

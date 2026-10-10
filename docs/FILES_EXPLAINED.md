@@ -145,3 +145,20 @@ Run with `swift test` on a Mac.
 
 An optional web extension: its button passes the page title, address and your selected text to
 LifeNotch's AI question box (it never sends anything itself). See its own README.
+
+## Added in v0.2
+
+| File | What it does |
+|---|---|
+| `Modules/Calculator.swift` | The safe calculator (reads only numbers and maths symbols) and the unit converter |
+| `Modules/KeepAwake.swift` | Keep Awake using Apple's public power assertion; nothing in System Settings changes |
+| `Modules/TodoStore.swift` | The to-do list |
+| `Modules/ToolTimerModel.swift` | Countdown timer and stopwatch |
+| `Modules/ShelfStore.swift` | File Shelf: remembers file locations only |
+| `Modules/FileSearchModel.swift` | Spotlight search (NSMetadataQuery) |
+| `Modules/WeatherModel.swift` | Weather from Open-Meteo for the city you type |
+| `AI/OpenAICompatibleClient.swift` | One client for Gemini, Groq, OpenRouter, DeepSeek and Ollama; also `AIOneShot` for quick one-off questions |
+| `Games/Game2048.swift`, `Games/SnakeGame.swift` | The two new games (rules are separate, testable structs) |
+| `Tabs/HomeView.swift`, `ClipboardView`, `TodoView`, `TimerToolView`, `WorldClockView`, `ToolsView`, `ShelfView`, `FileSearchView`, `SnippetsView`, `ShortcutsView`, `TranslateView` | The new tabs |
+| `Tabs/PaletteView.swift` | The command palette / all-modules search |
+| `Tabs/ModulesSettingsCard.swift` | Choose which tabs sit in the top bar |
