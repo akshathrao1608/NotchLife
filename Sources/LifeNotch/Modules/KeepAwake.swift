@@ -18,7 +18,7 @@ final class KeepAwakeModel: ObservableObject {
     /// minutes == nil means "until I turn it off".
     func start(minutes: Int?) {
         stop()
-        let status = IOPMAssertionCreateWithName(kIOPMAssertionTypePreventUserIdleDisplaySleep,
+        let status = IOPMAssertionCreateWithName(kIOPMAssertionTypePreventUserIdleDisplaySleep as CFString,
                                                  IOPMAssertionLevel(kIOPMAssertionLevelOn),
                                                  "LifeNotch Keep Awake" as CFString,
                                                  &assertionID)
