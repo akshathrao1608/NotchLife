@@ -14,7 +14,17 @@ let package = Package(
     targets: [
         .executableTarget(
             name: "LifeNotch",
-            path: "Sources/LifeNotch"
+            path: "Sources/LifeNotch",
+            // Embeds Resources/Info.plist inside the program so macOS can show the permission
+            // explanations (calendar, microphone...) even when you run from Xcode.
+            linkerSettings: [
+                .unsafeFlags([
+                    "-Xlinker", "-sectcreate",
+                    "-Xlinker", "__TEXT",
+                    "-Xlinker", "__info_plist",
+                    "-Xlinker", "\(Context.packageDirectory)/Resources/Info.plist"
+                ])
+            ]
         ),
         // Run with:  swift test
         .testTarget(

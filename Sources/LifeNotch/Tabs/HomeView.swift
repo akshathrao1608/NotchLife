@@ -11,6 +11,7 @@ struct HomeView: View {
     @EnvironmentObject private var assignments: AssignmentStore
     @EnvironmentObject private var todos: TodoStore
     @EnvironmentObject private var notch: NotchState
+    @EnvironmentObject private var calendar: CalendarModel
     @State private var cityDraft = ""
 
     var body: some View {
@@ -115,6 +116,14 @@ struct HomeView: View {
                 SectionTitle("Due next")
                 Spacer()
                 Button("All") { notch.selectedTab = .assignments }.buttonStyle(.plain).lnFont(10.5).foregroundStyle(.secondary)
+            }
+            if let event = calendar.nextEvent {
+                HStack {
+                    Image(systemName: "calendar").foregroundStyle(.secondary)
+                    Text(event.title).lnFont(12).lineLimit(1)
+                    Spacer()
+                    Text(event.start.formatted(date: .omitted, time: .shortened)).lnFont(10.5, .semibold).foregroundStyle(.secondary)
+                }
             }
             if assignments.upcoming.isEmpty {
                 Text("Nothing due. 🎉").lnFont(11).foregroundStyle(.secondary)

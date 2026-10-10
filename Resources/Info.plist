@@ -49,7 +49,27 @@
     <key>NSDownloadsFolderUsageDescription</key>
     <string>LifeNotch only looks inside Downloads when you press Scan in Clean Desk. It never deletes or moves anything.</string>
 
-    <!-- Deliberately NOT included: camera, microphone, contacts, location, screen recording,
-         accessibility, Apple Events. LifeNotch does not need them. -->
+    <!-- Each of these sentences is shown by macOS ONLY when you use the matching feature,
+         after LifeNotch has already asked you in plain words. -->
+    <key>NSAppleEventsUsageDescription</key>
+    <string>LifeNotch asks Music or Spotify what is playing and sends play, pause and skip when you press its buttons in the Now Playing tab.</string>
+    <key>NSCalendarsFullAccessUsageDescription</key>
+    <string>LifeNotch shows your upcoming events and adds events you create with Quick Add. It keeps nothing outside your Mac.</string>
+    <key>NSCalendarsUsageDescription</key>
+    <string>LifeNotch shows your upcoming events and adds events you create with Quick Add.</string>
+    <key>NSRemindersFullAccessUsageDescription</key>
+    <string>LifeNotch adds reminders you create with Quick Add.</string>
+    <key>NSMicrophoneUsageDescription</key>
+    <string>LifeNotch records your voice only while you press Record in Voice Notes. The recording is deleted after it is turned into text.</string>
+    <key>NSSpeechRecognitionUsageDescription</key>
+    <string>LifeNotch turns your Voice Notes recording into text on this Mac.</string>
+    <key>NSAppTransportSecurity</key>
+    <dict>
+        <key>NSAllowsLocalNetworking</key>
+        <true/>
+    </dict>
+
+    <!-- Not included: camera, contacts, location. Screen Recording and Accessibility have no
+         text here: macOS shows its own screen when you use screen capture or window snapping. -->
 </dict>
 </plist>

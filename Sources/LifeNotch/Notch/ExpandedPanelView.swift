@@ -117,6 +117,12 @@ struct ExpandedPanelView: View {
         case .snippets: SnippetsView()
         case .shortcuts: ShortcutsView()
         case .translate: TranslateView()
+        case .nowPlaying: NowPlayingView()
+        case .windows: WindowsView()
+        case .quickAdd: QuickAddView()
+        case .voice: VoiceNotesView()
+        case .convert: ConvertView()
+        case .flights: FlightRadarView()
         }
     }
 }

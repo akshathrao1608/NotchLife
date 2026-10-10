@@ -99,6 +99,20 @@ Choose which tabs stay in the top bar in Settings > "Top bar tabs".
 | **More AI providers** | Gemini, Groq, OpenRouter, DeepSeek and **Ollama (runs on your Mac, no key)**, plus Solve / Explain / Hint / Rewrite / Code modes and AI personalities |
 | **More themes** | 16 themes in total |
 
+### Batch B modules (each asks before using anything sensitive)
+
+| Module | What it does | Permission / privacy |
+|---|---|---|
+| **Now Playing** | Title, artist, artwork and controls for Music / Spotify | Asks first; macOS Automation question; only talks to apps already running |
+| **Windows** | Snap the front window to halves, thirds, corners; optional Control+Option shortcuts | Asks first; needs macOS Accessibility |
+| **Screen capture** | Drag a box, send to AI tab (Control+Option+S) or copy its text (Text Grab, Control+Option+X) | Asks first; you choose the area; picture kept in memory only |
+| **Quick Add + Calendar** | "dentist friday 3pm" becomes an event, reminder or to-do; "Up next" on Home | Asks first; macOS Calendar / Reminders questions |
+| **Voice Notes** | Record, turn into text on this Mac, recording deleted; optional AI summary | Asks first; microphone + speech recognition questions |
+| **Convert** | Pictures, PDF pages, video, audio to other formats; saved next to the original, never overwrites | Only files you pick |
+| **Flight Radar** | Planes near a city on a radar (OpenSky Network, live) | Sends only a city name and a map rectangle; no location permission |
+
+Left out on purpose: Touch ID lock and crypto prices (your choice).
+
 ### Deliberately NOT included (and why)
 
 These ideas are from another notch app's feature list. LifeNotch does not copy that app's code, name or artwork;

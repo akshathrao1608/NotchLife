@@ -11,6 +11,11 @@ enum ConsentTopic: String, CaseIterable, Identifiable {
     case sendAttachmentsToAI
     case readClipboard
     case scanFolders
+    case controlMusicApps
+    case screenCapture
+    case calendarAccess
+    case voiceRecording
+    case windowControl
 
     var id: String { rawValue }
 
@@ -19,6 +24,11 @@ enum ConsentTopic: String, CaseIterable, Identifiable {
         case .sendAttachmentsToAI: return "Send files and images to your AI provider"
         case .readClipboard: return "Read the clipboard when I press Paste"
         case .scanFolders: return "Look inside Desktop / Downloads when I press Scan"
+        case .controlMusicApps: return "Ask Music and Spotify what is playing"
+        case .screenCapture: return "Take a picture of my screen when I use capture"
+        case .calendarAccess: return "Read my calendar and add events and reminders"
+        case .voiceRecording: return "Record my voice and turn it into text on this Mac"
+        case .windowControl: return "Move and resize the front window (Accessibility)"
         }
     }
 }

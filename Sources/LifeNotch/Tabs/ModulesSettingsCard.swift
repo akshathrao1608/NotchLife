@@ -25,6 +25,8 @@ struct ModulesSettingsCard: View {
                 Button("Reset to the original 8") { settings.prefs.pinnedTabs = NotchTab.core }.buttonStyle(LNButtonStyle())
                 Toggle("Control + Option + P opens the command palette", isOn: $settings.prefs.paletteHotKeyEnabled)
             }
+            Toggle("Control + Option + S asks AI about part of the screen; Control + Option + X copies its text", isOn: $settings.prefs.captureHotKeysEnabled)
+            Toggle("Control + Option + arrows / Return / C snap the front window (needs Accessibility; LifeNotch asks first)", isOn: $settings.prefs.windowHotKeysEnabled)
             Text("⌘1, ⌘2… switch to the tabs in the top bar, in order.").lnFont(10).foregroundStyle(.secondary)
         }
         .card()

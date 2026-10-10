@@ -8,6 +8,7 @@ struct AISearchView: View {
     @EnvironmentObject private var vm: AIViewModel
     @EnvironmentObject private var settings: AppSettings
     @EnvironmentObject private var notch: NotchState
+    @EnvironmentObject private var capture: ScreenCaptureCoordinator
     @FocusState private var inputFocused: Bool
     @State private var isDropTargeted = false
 
@@ -203,6 +204,8 @@ struct AISearchView: View {
                 }
                 Spacer()
                 LNIconButton(systemName: "paperclip", label: "Attach an image, PDF or text file") { pickFiles() }
+                LNIconButton(systemName: "viewfinder", label: "Capture part of the screen (asks first)") { Task { await capture.askAI() } }
+                    .help("Drag a box around part of your screen. It is added here; nothing is sent until you press Send. Shortcut: Control + Option + S")
                 LNIconButton(systemName: "doc.on.clipboard", label: "Paste from clipboard (asks first)") { pasteFromClipboard() }
                     .help("Tip: press Command-Control-Shift-4 to copy a screenshot area, then press this button.")
                 LNIconButton(systemName: "globe", label: "Search the web for sources", isActive: vm.useWebSearch || vm.mode == .findSources) {

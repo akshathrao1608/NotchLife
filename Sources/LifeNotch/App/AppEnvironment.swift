@@ -31,6 +31,14 @@ final class AppEnvironment: ObservableObject {
     let weather = WeatherModel()
     let toolTimer: ToolTimerModel
     let clipboard: ClipboardMonitor
+    let nowPlaying = NowPlayingModel()
+    let snapper = WindowSnapper()
+    let calendar = CalendarModel()
+    let voice = VoiceNotesModel()
+    let convert = ConvertModel()
+    let flights = FlightRadarModel()
+    let capture: ScreenCaptureCoordinator
+    private var extraHotKeys: ExtraHotKeys?
     private var cancellables = Set<AnyCancellable>()
 
     /// Set by the AppDelegate once the window exists.
@@ -56,12 +64,15 @@ final class AppEnvironment: ObservableObject {
         clipboard = ClipboardMonitor(settings: settings)
         messages = MessageHub(settings: settings)
         toolTimer = ToolTimerModel(settings: settings)
+        capture = ScreenCaptureCoordinator(settings: settings, ai: ai, notch: notch)
     }
 
     /// Called once when the app launches.
     func start() {
         assignments.rescheduleReminders()
         sports.start()
+        calendar.refreshIfAuthorized()
+        extraHotKeys = ExtraHotKeys(env: self)
         // Battery and Wi-Fi are only read in the background while the compact bar shows them.
         settings.$prefs
             .map { $0.showBattery || $0.showWifi }
@@ -101,5 +112,12 @@ extension View {
             .environmentObject(env.fileSearch)
             .environmentObject(env.weather)
             .environmentObject(env.toolTimer)
+            .environmentObject(env.nowPlaying)
+            .environmentObject(env.snapper)
+            .environmentObject(env.calendar)
+            .environmentObject(env.voice)
+            .environmentObject(env.convert)
+            .environmentObject(env.flights)
+            .environmentObject(env.capture)
     }
 }

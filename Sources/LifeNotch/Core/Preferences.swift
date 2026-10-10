@@ -48,6 +48,8 @@ struct Preferences: Codable, Equatable {
     /// The tabs shown in the top bar (the first half left of the camera, the rest on the right).
     var pinnedTabs: [NotchTab] = NotchTab.core
     var paletteHotKeyEnabled = true   // Control + Option + P opens the command palette
+    var captureHotKeysEnabled = true  // Control + Option + S (ask AI about the screen) and X (copy text from the screen)
+    var windowHotKeysEnabled = false  // Control + Option + arrows etc. snap the front window (needs Accessibility)
     var lastMacFunSection: MacFunSection = .focus
 
     // MARK: Compact bar (what shows beside the notch)
@@ -123,6 +125,8 @@ struct Preferences: Codable, Equatable {
 
     // MARK: More modules
     var weatherCity = ""
+    var flightCity = ""
+    var flightRangeKm = 60
     var worldClocks: [String] = ["Europe/London", "America/New_York", "Asia/Tokyo"]
     var snippets: [Snippet] = []
     var shortcutNames: [String] = []

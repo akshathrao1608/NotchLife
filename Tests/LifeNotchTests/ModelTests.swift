@@ -219,4 +219,35 @@ final class ModuleTests: XCTestCase {
         XCTAssertEqual(WeatherModel.describe(code: 63, isDay: true).1, "Rain")
         XCTAssertEqual(WeatherModel.describe(code: 95, isDay: false).1, "Thunderstorm")
     }
+
+    func testSnapZoneMaths() {
+        let area = CGRect(x: 0, y: 25, width: 1000, height: 800)
+        XCTAssertEqual(SnapZone.rightHalf.frame(in: area), CGRect(x: 500, y: 25, width: 500, height: 800))
+        XCTAssertEqual(SnapZone.maximize.frame(in: area), area)
+    }
+
+    func testQuickAddParserKeepsTitleLetters() {
+        let result = QuickAddParser.parse("Eat tomorrow at 5pm")
+        XCTAssertNotNil(result.date)
+        XCTAssertTrue(result.title.hasPrefix("Eat"))
+        XCTAssertNil(QuickAddParser.parse("buy milk").date)
+    }
+
+    func testFlightBoxAndParse() {
+        let box = FlightRadarModel.box(lat: 0, lon: 0, rangeKm: 111)
+        XCTAssertEqual(box.maxLat, 1, accuracy: 0.001)
+        let json = #"{"states":[["abc123","BAW1  ","UK",0,0,-0.5,51.5,10000.0,false,200.0,90.0]]}"#
+        let planes = FlightRadarModel.parse(Data(json.utf8))
+        XCTAssertEqual(planes.first?.callsign, "BAW1")
+        XCTAssertEqual(planes.first?.altitudeText, "32,808 ft")
+    }
+
+    func testConvertNeverOverwrites() throws {
+        let dir = FileManager.default.temporaryDirectory.appendingPathComponent(UUID().uuidString)
+        try FileManager.default.createDirectory(at: dir, withIntermediateDirectories: true)
+        defer { try? FileManager.default.removeItem(at: dir) }
+        let first = ConvertModel.freeURL(base: dir, name: "pic", ext: "png")
+        try Data().write(to: first)
+        XCTAssertEqual(ConvertModel.freeURL(base: dir, name: "pic", ext: "png").lastPathComponent, "pic 2.png")
+    }
 }

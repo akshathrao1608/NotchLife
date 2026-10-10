@@ -7,6 +7,7 @@ import AppKit
 
 struct ToolsView: View {
     @EnvironmentObject private var keepAwake: KeepAwakeModel
+    @EnvironmentObject private var capture: ScreenCaptureCoordinator
 
     @State private var expression = ""
     @State private var category: UnitCategory = .length
@@ -23,6 +24,7 @@ struct ToolsView: View {
                 converterCard
                 keepAwakeCard
                 colorCard
+                textGrabCard
             }
             .padding(.trailing, 6)
         }
@@ -112,6 +114,21 @@ struct ToolsView: View {
                 .buttonStyle(LNButtonStyle())
             }
             Text("Changes no system settings. It ends by itself when you quit LifeNotch.").lnFont(9.5).foregroundStyle(.secondary)
+        }
+        .frame(maxWidth: .infinity, alignment: .leading)
+        .card()
+    }
+
+    // MARK: Text Grab
+
+    private var textGrabCard: some View {
+        VStack(alignment: .leading, spacing: 6) {
+            SectionTitle("Text Grab")
+            Text("Drag a box around any words on your screen (even in pictures or videos) and they are copied to your clipboard. Read on this Mac only. Shortcut: Control + Option + X")
+                .lnFont(10.5).foregroundStyle(.secondary)
+            Button("Grab text from the screen") { Task { await capture.textGrab() } }
+                .buttonStyle(LNButtonStyle(prominent: true))
+            if !capture.message.isEmpty { Text(capture.message).lnFont(10.5).foregroundStyle(.secondary) }
         }
         .frame(maxWidth: .infinity, alignment: .leading)
         .card()

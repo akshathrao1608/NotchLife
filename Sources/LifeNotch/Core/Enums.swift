@@ -11,6 +11,7 @@ enum NotchTab: String, CaseIterable, Identifiable, Codable {
     case ai, browser, messages, assignments, sports, games, macFun, settings
     // More modules (open them from the grid button or the command palette)
     case home, clipboard, todo, timer, world, tools, shelf, search, snippets, shortcuts, translate
+    case nowPlaying, windows, quickAdd, voice, convert, flights
 
     var id: String { rawValue }
 
@@ -38,6 +39,12 @@ enum NotchTab: String, CaseIterable, Identifiable, Codable {
         case .snippets: return "Snippets"
         case .shortcuts: return "Shortcuts"
         case .translate: return "Translate"
+        case .nowPlaying: return "Now Playing"
+        case .windows: return "Windows"
+        case .quickAdd: return "Quick Add"
+        case .voice: return "Voice Notes"
+        case .convert: return "Convert"
+        case .flights: return "Flight Radar"
         }
     }
 
@@ -63,6 +70,12 @@ enum NotchTab: String, CaseIterable, Identifiable, Codable {
         case .snippets: return "text.quote"
         case .shortcuts: return "bolt.fill"
         case .translate: return "character.bubble"
+        case .nowPlaying: return "music.note"
+        case .windows: return "rectangle.split.2x2"
+        case .quickAdd: return "calendar.badge.plus"
+        case .voice: return "mic.fill"
+        case .convert: return "arrow.triangle.2.circlepath"
+        case .flights: return "airplane"
         }
     }
 
@@ -88,6 +101,12 @@ enum NotchTab: String, CaseIterable, Identifiable, Codable {
         case .snippets: return "Saved text, one click to copy"
         case .shortcuts: return "Run your Apple Shortcuts"
         case .translate: return "Translate text and read it aloud"
+        case .nowPlaying: return "What's playing in Music or Spotify, with controls"
+        case .windows: return "Snap the front window to halves, thirds, quarters"
+        case .quickAdd: return "Type \"Dentist tomorrow 3pm\" and add it"
+        case .voice: return "Record, transcribe on your Mac, summarise"
+        case .convert: return "Turn images, PDFs, video and audio into other formats"
+        case .flights: return "Aircraft around a city, live on a radar"
         }
     }
 }
