@@ -266,4 +266,20 @@ final class ModuleTests: XCTestCase {
         XCTAssertEqual(CountdownStore.text(days: 5), "5 days")
         XCTAssertEqual(CountdownStore.daysUntil(Date().addingTimeInterval(3 * 86400 + 60)), 3)
     }
+
+    func testCarrierAndFlightNumber() {
+        XCTAssertEqual(TrackingDetect.carrier(for: "1Z999AA10123456784"), .ups)
+        XCTAssertEqual(TrackingDetect.carrier(for: "TBA123456789012"), .amazon)
+        XCTAssertEqual(TrackingDetect.carrier(for: "hello"), .unknown)
+        XCTAssertEqual(FlightNumber.callsign(from: "ba 117"), "BAW117")
+        XCTAssertEqual(FlightNumber.callsign(from: "U2123"), "EZY123")
+        XCTAssertEqual(FlightNumber.callsign(from: "BAW117"), "BAW117")
+    }
+
+    func testBluetoothParse() {
+        let json = #"{"SPBluetoothDataType":[{"device_connected":[{"My AirPods":{"device_address":"AA:BB","device_minorType":"Headphones","device_batteryLevelLeft":"80%","device_batteryLevelCase":"55%"}}]}]}"#
+        let gadgets = DevicesModel.parse(Data(json.utf8))
+        XCTAssertEqual(gadgets.first?.name, "My AirPods")
+        XCTAssertEqual(gadgets.first?.batteries.map { $0.percent }, [80, 55])
+    }
 }

@@ -15,6 +15,11 @@ struct ShelfView: View {
             HStack {
                 Text("Drop files or folders here").lnFont(11.5).foregroundStyle(.secondary)
                 Spacer()
+                Button {
+                    if let url = URL(string: "https://pairdrop.net") { NSWorkspace.shared.open(url) }
+                } label: { Label("PairDrop", systemImage: "wifi") }
+                    .buttonStyle(LNButtonStyle())
+                    .help("Opens pairdrop.net in your browser: send files to any device on your Wi-Fi with a code. It is a separate website, not part of LifeNotch.")
                 if !shelf.items.isEmpty {
                     Button { airDropAll() } label: { Label("AirDrop all", systemImage: "airplayaudio") }
                         .buttonStyle(LNButtonStyle())

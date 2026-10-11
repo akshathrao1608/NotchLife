@@ -12,7 +12,7 @@ enum NotchTab: String, CaseIterable, Identifiable, Codable {
     // More modules (open them from the grid button or the command palette)
     case home, clipboard, todo, timer, world, tools, shelf, search, snippets, shortcuts, translate
     case nowPlaying, windows, quickAdd, voice, convert, flights
-    case habits, countdowns, breathe
+    case habits, countdowns, breathe, devices, tracking
 
     var id: String { rawValue }
 
@@ -49,6 +49,8 @@ enum NotchTab: String, CaseIterable, Identifiable, Codable {
         case .habits: return "Habits"
         case .countdowns: return "Days Until"
         case .breathe: return "Breathe"
+        case .devices: return "Devices"
+        case .tracking: return "Live Tracking"
         }
     }
 
@@ -83,6 +85,8 @@ enum NotchTab: String, CaseIterable, Identifiable, Codable {
         case .habits: return "checkmark.seal.fill"
         case .countdowns: return "calendar.badge.clock"
         case .breathe: return "wind"
+        case .devices: return "headphones"
+        case .tracking: return "shippingbox.fill"
         }
     }
 
@@ -117,6 +121,8 @@ enum NotchTab: String, CaseIterable, Identifiable, Codable {
         case .habits: return "Daily habits with streaks"
         case .countdowns: return "Days until exams, trips and birthdays"
         case .breathe: return "A calming breathing guide"
+        case .devices: return "AirPods and accessory battery"
+        case .tracking: return "Parcel links and flight numbers"
         }
     }
 }

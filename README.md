@@ -113,6 +113,9 @@ Choose which tabs stay in the top bar in Settings > "Top bar tabs".
 
 **Batch C:** Habits (daily ticks + streaks), Days Until (exam/trip countdowns) and Breathe (calm breathing guide). All stored only on this Mac.
 
+**Batch D:** *Devices* (battery of connected AirPods and Bluetooth accessories, read from macOS's own Bluetooth report), *Live Tracking* (parcel numbers open the carrier's own page; flight numbers show the plane if airborne, via OpenSky) and a **PairDrop** button on the File Shelf (opens pairdrop.net; AirDrop was already there).
+Not built, and why: *notifications from other apps / iMessage replies*, *Messenger*, *Free VPN*, *per-app volume/EQ* and *Ring my iPhone / which apps use the mic* need private macOS access, servers or system drivers, which the safety rules rule out; *Face ID lock* was your call; *Sign in and sync* conflicts with "nothing leaves your Mac" (Settings > Backup already exports a file you can save into iCloud Drive yourself).
+
 **Camera blending:** Settings > Appearance > "Blend with the camera" paints the strip beside the camera pure black, and a slider sets the space kept beside the camera.
 
 Left out on purpose: Touch ID lock and crypto prices (your choice).

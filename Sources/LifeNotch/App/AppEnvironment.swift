@@ -38,6 +38,8 @@ final class AppEnvironment: ObservableObject {
     let convert = ConvertModel()
     let flights = FlightRadarModel()
     let habits = HabitStore()
+    let devices = DevicesModel()
+    let tracking = TrackingModel()
     let countdowns = CountdownStore()
     let capture: ScreenCaptureCoordinator
     private var extraHotKeys: ExtraHotKeys?
@@ -121,6 +123,8 @@ extension View {
             .environmentObject(env.convert)
             .environmentObject(env.flights)
             .environmentObject(env.habits)
+            .environmentObject(env.devices)
+            .environmentObject(env.tracking)
             .environmentObject(env.countdowns)
             .environmentObject(env.capture)
     }

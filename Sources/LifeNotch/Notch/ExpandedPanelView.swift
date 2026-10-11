@@ -126,6 +126,8 @@ struct ExpandedPanelView: View {
         case .habits: HabitsView()
         case .countdowns: CountdownsView()
         case .breathe: BreatheView()
+        case .devices: DevicesView()
+        case .tracking: TrackingView()
         }
     }
 }
