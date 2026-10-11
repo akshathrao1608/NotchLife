@@ -37,6 +37,8 @@ final class AppEnvironment: ObservableObject {
     let voice = VoiceNotesModel()
     let convert = ConvertModel()
     let flights = FlightRadarModel()
+    let habits = HabitStore()
+    let countdowns = CountdownStore()
     let capture: ScreenCaptureCoordinator
     private var extraHotKeys: ExtraHotKeys?
     private var cancellables = Set<AnyCancellable>()
@@ -118,6 +120,8 @@ extension View {
             .environmentObject(env.voice)
             .environmentObject(env.convert)
             .environmentObject(env.flights)
+            .environmentObject(env.habits)
+            .environmentObject(env.countdowns)
             .environmentObject(env.capture)
     }
 }

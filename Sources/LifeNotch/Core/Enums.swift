@@ -12,6 +12,7 @@ enum NotchTab: String, CaseIterable, Identifiable, Codable {
     // More modules (open them from the grid button or the command palette)
     case home, clipboard, todo, timer, world, tools, shelf, search, snippets, shortcuts, translate
     case nowPlaying, windows, quickAdd, voice, convert, flights
+    case habits, countdowns, breathe
 
     var id: String { rawValue }
 
@@ -45,6 +46,9 @@ enum NotchTab: String, CaseIterable, Identifiable, Codable {
         case .voice: return "Voice Notes"
         case .convert: return "Convert"
         case .flights: return "Flight Radar"
+        case .habits: return "Habits"
+        case .countdowns: return "Days Until"
+        case .breathe: return "Breathe"
         }
     }
 
@@ -76,6 +80,9 @@ enum NotchTab: String, CaseIterable, Identifiable, Codable {
         case .voice: return "mic.fill"
         case .convert: return "arrow.triangle.2.circlepath"
         case .flights: return "airplane"
+        case .habits: return "checkmark.seal.fill"
+        case .countdowns: return "calendar.badge.clock"
+        case .breathe: return "wind"
         }
     }
 
@@ -107,6 +114,9 @@ enum NotchTab: String, CaseIterable, Identifiable, Codable {
         case .voice: return "Record, transcribe on your Mac, summarise"
         case .convert: return "Turn images, PDFs, video and audio into other formats"
         case .flights: return "Aircraft around a city, live on a radar"
+        case .habits: return "Daily habits with streaks"
+        case .countdowns: return "Days until exams, trips and birthdays"
+        case .breathe: return "A calming breathing guide"
         }
     }
 }

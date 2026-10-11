@@ -108,6 +108,11 @@ struct SettingsView: View {
             .pickerStyle(.segmented)
             .frame(maxWidth: 360)
             Text(settings.prefs.compactStyle.detail).lnFont(10.5).foregroundStyle(.secondary)
+            Toggle("Blend with the camera (paint the strip beside it pure black)", isOn: $settings.prefs.blendWithCamera)
+            HStack {
+                Text("Space beside the camera: \(Int(settings.prefs.cameraClearance)) pt").lnFont(11)
+                Slider(value: $settings.prefs.cameraClearance, in: 0...24, step: 2).frame(width: 160)
+            }
             Toggle("Set an exact width instead", isOn: Binding(
                 get: { settings.prefs.compactSideWidth > 0 },
                 set: { settings.prefs.compactSideWidth = $0 ? 40 : 0 }

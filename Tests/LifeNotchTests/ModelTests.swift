@@ -250,4 +250,20 @@ final class ModuleTests: XCTestCase {
         try Data().write(to: first)
         XCTAssertEqual(ConvertModel.freeURL(base: dir, name: "pic", ext: "png").lastPathComponent, "pic 2.png")
     }
+
+    func testHabitStreak() {
+        var habit = Habit(name: "Read")
+        let cal = Calendar.current
+        let today = Date()
+        for back in 0..<3 { habit.doneDays.insert(HabitStore.key(cal.date(byAdding: .day, value: -back, to: today)!)) }
+        XCTAssertEqual(HabitStore.streak(habit), 3)
+        habit.doneDays.remove(HabitStore.key(today))
+        XCTAssertEqual(HabitStore.streak(habit), 2)   // streak survives until the day is over
+    }
+
+    func testDaysUntilText() {
+        XCTAssertEqual(CountdownStore.text(days: 0), "Today")
+        XCTAssertEqual(CountdownStore.text(days: 5), "5 days")
+        XCTAssertEqual(CountdownStore.daysUntil(Date().addingTimeInterval(3 * 86400 + 60)), 3)
+    }
 }

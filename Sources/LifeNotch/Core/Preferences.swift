@@ -38,6 +38,10 @@ struct Preferences: Codable, Equatable {
 
     // MARK: Notch behaviour
     var hoverPreview = true
+    /// Extra empty space (points) kept on each side of the camera so nothing sits against or under it.
+    var cameraClearance: Double = 6
+    /// Always paint the strip beside the camera pure black so the bar looks like one piece with the hardware notch.
+    var blendWithCamera = true
     /// How long (seconds) your mouse must rest on the notch before it reacts. Clicking is always instant.
     var hoverDelaySeconds: Double = 1.0
     var collapseOnOutsideClick = true

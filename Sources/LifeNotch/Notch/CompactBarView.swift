@@ -55,7 +55,7 @@ struct CompactBarView: View {
                     row(leftItems(prefs), limit: limit)
                         .frame(width: notch.leftSide, alignment: .trailing)
                         .clipped()
-                    Color.clear.frame(width: geometry.notchWidth)
+                    cameraStrip(geometry)
                     row(rightItems(prefs), limit: limit)
                         .frame(width: notch.rightSide, alignment: .leading)
                         .clipped()
@@ -75,6 +75,12 @@ struct CompactBarView: View {
         .accessibilityLabel("LifeNotch compact bar")
         .accessibilityAddTraits(.isButton)
         .accessibilityAction(named: "Open LifeNotch") { notch.request(.expanded) }
+    }
+
+    /// The space around the camera: pure black so the bar and the hardware notch look like one piece.
+    private func cameraStrip(_ geometry: NotchGeometry) -> some View {
+        (settings.prefs.blendWithCamera ? Color.black : Color.clear)
+            .frame(width: notch.cameraGap)
     }
 
     /// Shows only as many chips as the chosen bar size allows (the most important come first).

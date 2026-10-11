@@ -111,6 +111,10 @@ Choose which tabs stay in the top bar in Settings > "Top bar tabs".
 | **Convert** | Pictures, PDF pages, video, audio to other formats; saved next to the original, never overwrites | Only files you pick |
 | **Flight Radar** | Planes near a city on a radar (OpenSky Network, live) | Sends only a city name and a map rectangle; no location permission |
 
+**Batch C:** Habits (daily ticks + streaks), Days Until (exam/trip countdowns) and Breathe (calm breathing guide). All stored only on this Mac.
+
+**Camera blending:** Settings > Appearance > "Blend with the camera" paints the strip beside the camera pure black, and a slider sets the space kept beside the camera.
+
 Left out on purpose: Touch ID lock and crypto prices (your choice).
 
 ### Deliberately NOT included (and why)

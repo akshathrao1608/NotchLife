@@ -164,6 +164,7 @@ LifeNotch's AI question box (it never sends anything itself). See its own README
 | `Modules/VoiceNotesModel.swift` | Record, on-device speech-to-text, delete the audio |
 | `Modules/ConvertModel.swift` | File conversion (ImageIO, PDFKit, AVFoundation) |
 | `Modules/FlightRadarModel.swift` | Aircraft near a city from OpenSky |
+| `Modules/HabitStore.swift` / `CountdownStore.swift` | Habits with streaks; days-until list |
 | `Notch/ExtraHotKeys.swift` | Optional Control+Option shortcuts for capture and window snapping |
 | `AI/OpenAICompatibleClient.swift` | One client for Gemini, Groq, OpenRouter, DeepSeek and Ollama; also `AIOneShot` for quick one-off questions |
 | `Games/Game2048.swift`, `Games/SnakeGame.swift` | The two new games (rules are separate, testable structs) |

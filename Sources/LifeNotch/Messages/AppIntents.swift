@@ -16,7 +16,8 @@ extension NotchTab: AppEnum {
         .home: "Home", .clipboard: "Clipboard", .todo: "To-Do", .timer: "Timer", .world: "World Clock",
         .tools: "Tools", .shelf: "File Shelf", .search: "File Search", .snippets: "Snippets",
         .shortcuts: "Shortcuts", .translate: "Translate", .nowPlaying: "Now Playing", .windows: "Windows",
-        .quickAdd: "Quick Add", .voice: "Voice Notes", .convert: "Convert", .flights: "Flight Radar"
+        .quickAdd: "Quick Add", .voice: "Voice Notes", .convert: "Convert", .flights: "Flight Radar",
+        .habits: "Habits", .countdowns: "Days Until", .breathe: "Breathe"
     ]
 }
 

@@ -25,6 +25,11 @@ final class NotchState: ObservableObject {
     /// Width available to the left / right of the camera notch in the compact bar.
     @Published var leftSide: CGFloat = 150
     @Published var rightSide: CGFloat = 150
+    /// Empty space kept on each side of the camera (from Settings).
+    @Published var cameraClearance: CGFloat = 6
+
+    /// The width reserved in the middle for the camera: its real width plus a little breathing room.
+    var cameraGap: CGFloat { geometry.notchWidth + (geometry.hasHardwareNotch ? cameraClearance * 2 : 0) }
 
     /// The controller (which owns the real macOS window) plugs itself in here.
     var onRequestMode: ((Mode) -> Void)?
@@ -53,7 +58,7 @@ final class NotchState: ObservableObject {
 
     /// The visible size of the black shape for each mode.
     func size(for mode: Mode) -> CGSize {
-        let compactWidth = geometry.notchWidth + leftSide + rightSide
+        let compactWidth = cameraGap + leftSide + rightSide
         switch mode {
         case .collapsed:
             return CGSize(width: compactWidth, height: geometry.notchHeight)
@@ -82,6 +87,7 @@ final class NotchState: ObservableObject {
     /// and how big the open panel is.
     func recomputeCompactWidths(_ p: Preferences) {
         if panelSize != p.panelSize { panelSize = p.panelSize }
+        if cameraClearance != CGFloat(p.cameraClearance) { cameraClearance = CGFloat(p.cameraClearance) }
 
         // Medium shows icons only; Large also shows text. (Timer and unread count keep their numbers.)
         let iconsOnly = p.compactStyle != .large

@@ -64,7 +64,7 @@ struct ExpandedPanelView: View {
             }
             .frame(maxWidth: .infinity, alignment: .trailing)
 
-            Color.clear.frame(width: geometry.notchWidth)
+            (settings.prefs.blendWithCamera ? Color.black : Color.clear).frame(width: notch.cameraGap)
 
             HStack(spacing: 2) {
                 ForEach(Array(tabs.suffix(from: half))) { TabButton(tab: $0) }
@@ -123,6 +123,9 @@ struct ExpandedPanelView: View {
         case .voice: VoiceNotesView()
         case .convert: ConvertView()
         case .flights: FlightRadarView()
+        case .habits: HabitsView()
+        case .countdowns: CountdownsView()
+        case .breathe: BreatheView()
         }
     }
 }
