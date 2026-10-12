@@ -11,13 +11,13 @@ struct SettingsView: View {
     var body: some View {
         ScrollView {
             VStack(alignment: .leading, spacing: 12) {
+                compactBarCard
                 appearanceCard
                 behaviourCard
                 ModulesSettingsCard()
                 AISettingsCard()
                 BrowserSettingsCard()
                 SportsSettingsCard()
-                compactBarCard
                 NotificationsSettingsCard()
                 BackupSettingsCard()
                 PrivacySettingsCard()
@@ -100,7 +100,7 @@ struct SettingsView: View {
 
     private var compactBarCard: some View {
         VStack(alignment: .leading, spacing: 6) {
-            SectionTitle("Notch size")
+            SectionTitle("Notch size, camera and icons")
             Text("If the bar covers menu-bar items, make it narrower here.").lnFont(10.5).foregroundStyle(.secondary)
             Picker("Bar size", selection: $settings.prefs.compactStyle) {
                 ForEach(CompactStyle.allCases) { Text($0.title).tag($0) }
