@@ -27,6 +27,8 @@ final class NotchState: ObservableObject {
     @Published var rightSide: CGFloat = 150
     /// Empty space kept on each side of the camera (from Settings).
     @Published var cameraClearance: CGFloat = 6
+    /// Extra height of the strip under the camera that holds the icons (0 when icons sit beside the camera).
+    @Published var iconRowHeight: CGFloat = 26
 
     /// The width reserved in the middle for the camera: its real width plus a little breathing room.
     var cameraGap: CGFloat { geometry.notchWidth + (geometry.hasHardwareNotch ? cameraClearance * 2 : 0) }
@@ -61,9 +63,9 @@ final class NotchState: ObservableObject {
         let compactWidth = cameraGap + leftSide + rightSide
         switch mode {
         case .collapsed:
-            return CGSize(width: compactWidth, height: geometry.notchHeight)
+            return CGSize(width: compactWidth, height: geometry.notchHeight + iconRowHeight)
         case .preview:
-            return CGSize(width: compactWidth + 24, height: geometry.notchHeight + 46)
+            return CGSize(width: compactWidth + 24, height: geometry.notchHeight + iconRowHeight + 46)
         case .expanded:
             let base = panelSize.size
             let width = min(base.width, max(geometry.screenWidth - 80, compactWidth))
@@ -87,6 +89,8 @@ final class NotchState: ObservableObject {
     /// and how big the open panel is.
     func recomputeCompactWidths(_ p: Preferences) {
         if panelSize != p.panelSize { panelSize = p.panelSize }
+        let row: CGFloat = (p.compactLayout == .below && p.compactStyle != .tiny) ? 26 : 0
+        if iconRowHeight != row { iconRowHeight = row }
         if cameraClearance != CGFloat(p.cameraClearance) { cameraClearance = CGFloat(p.cameraClearance) }
 
         // Medium shows icons only; Large also shows text. (Timer and unread count keep their numbers.)

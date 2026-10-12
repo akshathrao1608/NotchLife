@@ -51,16 +51,32 @@ struct CompactBarView: View {
         // Re-draw every 30 s so countdowns stay fresh.
         TimelineView(.periodic(from: .now, by: 30)) { _ in
             VStack(spacing: 0) {
-                HStack(spacing: 0) {
-                    row(leftItems(prefs), limit: limit)
-                        .frame(width: notch.leftSide, alignment: .trailing)
-                        .clipped()
-                    cameraStrip(geometry)
-                    row(rightItems(prefs), limit: limit)
-                        .frame(width: notch.rightSide, alignment: .leading)
-                        .clipped()
+                if prefs.compactLayout == .below {
+                    // Top strip = the camera's own row, pure black and empty. Icons live in the strip below it.
+                    cameraStrip(geometry).frame(maxWidth: .infinity)
+                        .frame(height: geometry.notchHeight)
+                    if notch.iconRowHeight > 0 {
+                        HStack(spacing: 0) {
+                            row(leftItems(prefs), limit: limit)
+                                .frame(maxWidth: .infinity, alignment: .leading)
+                            row(rightItems(prefs), limit: limit)
+                                .frame(maxWidth: .infinity, alignment: .trailing)
+                        }
+                        .padding(.horizontal, 16)
+                        .frame(height: notch.iconRowHeight)
+                    }
+                } else {
+                    HStack(spacing: 0) {
+                        row(leftItems(prefs), limit: limit)
+                            .frame(width: notch.leftSide, alignment: .trailing)
+                            .clipped()
+                        cameraStrip(geometry)
+                        row(rightItems(prefs), limit: limit)
+                            .frame(width: notch.rightSide, alignment: .leading)
+                            .clipped()
+                    }
+                    .frame(height: geometry.notchHeight)
                 }
-                .frame(height: geometry.notchHeight)
 
                 if notch.mode == .preview {
                     PreviewPeekRow()
@@ -80,7 +96,7 @@ struct CompactBarView: View {
     /// The space around the camera: pure black so the bar and the hardware notch look like one piece.
     private func cameraStrip(_ geometry: NotchGeometry) -> some View {
         (settings.prefs.blendWithCamera ? Color.black : Color.clear)
-            .frame(width: notch.cameraGap)
+            .frame(width: settings.prefs.compactLayout == .below ? nil : notch.cameraGap)
     }
 
     /// Shows only as many chips as the chosen bar size allows (the most important come first).

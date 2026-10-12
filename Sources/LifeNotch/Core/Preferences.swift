@@ -40,6 +40,8 @@ struct Preferences: Codable, Equatable {
     var hoverPreview = true
     /// Extra empty space (points) kept on each side of the camera so nothing sits against or under it.
     var cameraClearance: Double = 6
+    /// Icons below the camera (default, always visible) or beside it.
+    var compactLayout: CompactLayout = .below
     /// Always paint the strip beside the camera pure black so the bar looks like one piece with the hardware notch.
     var blendWithCamera = true
     /// How long (seconds) your mouse must rest on the notch before it reacts. Clicking is always instant.

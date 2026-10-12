@@ -159,6 +159,17 @@ enum MacFunSection: String, CaseIterable, Identifiable, Codable {
 
 // MARK: - Look and feel
 
+/// Where the compact bar's icons sit.
+enum CompactLayout: String, CaseIterable, Identifiable, Codable {
+    case below, beside
+    var id: String { rawValue }
+    var title: String { self == .below ? "Below the camera" : "Beside the camera" }
+    var detail: String {
+        self == .below ? "A black strip hangs under the camera and the icons sit in it, fully visible (like the Dynamic Island)."
+                       : "Icons sit on the left and right of the camera, in the menu bar row. Some may be hard to see."
+    }
+}
+
 /// How big the slim bar around the camera notch is (when the panel is closed).
 enum CompactStyle: String, CaseIterable, Identifiable, Codable {
     case tiny, small, medium, large

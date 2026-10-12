@@ -108,6 +108,10 @@ struct SettingsView: View {
             .pickerStyle(.segmented)
             .frame(maxWidth: 360)
             Text(settings.prefs.compactStyle.detail).lnFont(10.5).foregroundStyle(.secondary)
+            Picker("Icons go", selection: $settings.prefs.compactLayout) {
+                ForEach(CompactLayout.allCases) { Text($0.title).tag($0) }
+            }
+            Text(settings.prefs.compactLayout.detail).lnFont(10.5).foregroundStyle(.secondary)
             Toggle("Blend with the camera (paint the strip beside it pure black)", isOn: $settings.prefs.blendWithCamera)
             HStack {
                 Text("Space beside the camera: \(Int(settings.prefs.cameraClearance)) pt").lnFont(11)
