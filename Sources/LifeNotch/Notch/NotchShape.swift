@@ -22,27 +22,29 @@ struct NotchShape: Shape {
     func path(in rect: CGRect) -> Path {
         let t = min(topRadius, rect.height / 2, rect.width / 4)
         let b = min(bottomRadius, max(rect.height - t, 0), rect.width / 4)
+        // k > 0.5523 gives "continuous" (squircle-like) corners, the same soft feel as Apple's own hardware.
+        let k: CGFloat = 0.64
         var p = Path()
-        // start at top-left corner of the screen edge
         p.move(to: CGPoint(x: rect.minX, y: rect.minY))
-        // concave curve: top edge bends down into the left side
-        p.addQuadCurve(to: CGPoint(x: rect.minX + t, y: rect.minY + t),
-                       control: CGPoint(x: rect.minX + t, y: rect.minY))
-        // left side down
+        // concave top-left: leaves the top edge flat, then bends smoothly down
+        p.addCurve(to: CGPoint(x: rect.minX + t, y: rect.minY + t),
+                   control1: CGPoint(x: rect.minX + t * k, y: rect.minY),
+                   control2: CGPoint(x: rect.minX + t, y: rect.minY + t * (1 - k)))
         p.addLine(to: CGPoint(x: rect.minX + t, y: rect.maxY - b))
         // rounded bottom-left
-        p.addQuadCurve(to: CGPoint(x: rect.minX + t + b, y: rect.maxY),
-                       control: CGPoint(x: rect.minX + t, y: rect.maxY))
-        // bottom edge
+        p.addCurve(to: CGPoint(x: rect.minX + t + b, y: rect.maxY),
+                   control1: CGPoint(x: rect.minX + t, y: rect.maxY - b * (1 - k)),
+                   control2: CGPoint(x: rect.minX + t + b * (1 - k), y: rect.maxY))
         p.addLine(to: CGPoint(x: rect.maxX - t - b, y: rect.maxY))
         // rounded bottom-right
-        p.addQuadCurve(to: CGPoint(x: rect.maxX - t, y: rect.maxY - b),
-                       control: CGPoint(x: rect.maxX - t, y: rect.maxY))
-        // right side up
+        p.addCurve(to: CGPoint(x: rect.maxX - t, y: rect.maxY - b),
+                   control1: CGPoint(x: rect.maxX - t - b * (1 - k), y: rect.maxY),
+                   control2: CGPoint(x: rect.maxX - t, y: rect.maxY - b * (1 - k)))
         p.addLine(to: CGPoint(x: rect.maxX - t, y: rect.minY + t))
-        // concave curve into the top-right of the screen edge
-        p.addQuadCurve(to: CGPoint(x: rect.maxX, y: rect.minY),
-                       control: CGPoint(x: rect.maxX - t, y: rect.minY))
+        // concave top-right
+        p.addCurve(to: CGPoint(x: rect.maxX, y: rect.minY),
+                   control1: CGPoint(x: rect.maxX - t, y: rect.minY + t * (1 - k)),
+                   control2: CGPoint(x: rect.maxX - t * k, y: rect.minY))
         p.closeSubpath()
         return p
     }

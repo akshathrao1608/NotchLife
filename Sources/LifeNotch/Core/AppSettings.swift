@@ -29,10 +29,15 @@ final class AppSettings: ObservableObject {
     var textScale: CGFloat { CGFloat(prefs.textScale) }
 
     /// The spring used when the notch opens and closes.
-    var notchAnimation: Animation {
+    var notchAnimation: Animation { notchAnimation(opening: true) }
+
+    /// Opening is a soft spring with a tiny overshoot; closing is faster and settles without bouncing,
+    /// like the system's own animations.
+    func notchAnimation(opening: Bool) -> Animation {
         if reduceMotionEffective { return .easeInOut(duration: 0.12) }
         let speed = max(0.4, prefs.animationSpeed)
-        return .spring(response: 0.45 / speed, dampingFraction: 0.78)
+        return opening ? .spring(response: 0.5 / speed, dampingFraction: 0.82)
+                       : .spring(response: 0.36 / speed, dampingFraction: 0.95)
     }
 
     /// How long (seconds) the open/close animation takes to settle.

@@ -167,7 +167,8 @@ final class NotchPanelController {
         }
 
         // 2. Play the spring animation.
-        withAnimation(env.settings.notchAnimation) {
+        let opening = newMode == .expanded || (newMode == .preview && oldMode == .collapsed)
+        withAnimation(env.settings.notchAnimation(opening: opening)) {
             notch.mode = newMode
         }
 

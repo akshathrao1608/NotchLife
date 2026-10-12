@@ -47,14 +47,18 @@ struct NotchRootView: View {
         let expanded = mode == .expanded
         let size = notch.size(for: mode)
         let prefs = settings.prefs
-        let shape = NotchShape(topRadius: expanded ? 22 : 8, bottomRadius: expanded ? 30 : 12)
+        let shape = NotchShape(topRadius: expanded ? 20 : 9, bottomRadius: expanded ? 34 : 15)
 
         ZStack(alignment: .top) {
             ThemeFill(theme: prefs.theme)
             if expanded {
-                ExpandedPanelView().transition(.opacity)
+                // Laid out at its FINAL size so the shape simply reveals it (no re-flowing while it grows).
+                ExpandedPanelView()
+                    .frame(width: notch.size(for: .expanded).width, height: notch.size(for: .expanded).height, alignment: .top)
+                    .transition(.opacity.animation(.easeOut(duration: 0.22).delay(0.1)))
             } else {
-                CompactBarView().transition(.opacity)
+                CompactBarView()
+                    .transition(.opacity.animation(.easeOut(duration: 0.12)))
             }
         }
         .frame(width: size.width, height: size.height, alignment: .top)
@@ -66,6 +70,7 @@ struct NotchRootView: View {
         )
         .shadow(color: (expanded && prefs.theme.hasGlow) ? prefs.theme.accent.opacity(0.7) : Color.clear,
                 radius: 14)
+        .shadow(color: Color.black.opacity(expanded ? 0.45 : 0), radius: 16, x: 0, y: 8)
         .frame(maxWidth: .infinity, maxHeight: .infinity, alignment: .top)
         .animation(settings.notchAnimation, value: mode)
         .tint(prefs.theme.accent)
