@@ -141,6 +141,8 @@ Not built: *Do It* (AI controlling your screen), *iPhone companion*, *per-app vo
 *Notch Apple's included AI* (needs their servers; use Apple Intelligence / Ollama instead), and licence,
 beta-channel and support items (they belong to their product, not an app you build yourself).
 
+**VPN tab:** lists the VPNs already set up on your Mac (System Settings > VPN, or created by an app like Proton VPN or Cloudflare WARP), shows their status and Connects / Disconnects them after asking. It also links to free VPN apps' official sites. LifeNotch does not carry your traffic itself.
+
 **Camera blending:** Settings > Appearance > "Blend with the camera" paints the strip beside the camera pure black, and a slider sets the space kept beside the camera.
 
 Left out on purpose: Touch ID lock and crypto prices (your choice).

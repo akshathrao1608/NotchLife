@@ -136,6 +136,7 @@ struct ExpandedPanelView: View {
         case .activities: ActivitiesView()
         case .automations: AutomationsView()
         case .plugins: PluginsView()
+        case .vpn: VPNView()
         }
     }
 }

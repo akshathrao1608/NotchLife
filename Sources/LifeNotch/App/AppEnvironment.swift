@@ -48,6 +48,7 @@ final class AppEnvironment: ObservableObject {
     let chat = LANChatModel()
     let activities = ActivityStore()
     let plugins = PluginManager()
+    let vpn = VPNModel()
     let automations: AutomationsModel
     let notesSync: NotesSync
     private let keyClick = KeyClickModel()
@@ -177,6 +178,7 @@ extension View {
             .environmentObject(env.chat)
             .environmentObject(env.activities)
             .environmentObject(env.plugins)
+            .environmentObject(env.vpn)
             .environmentObject(env.automations)
             .environmentObject(env.notesSync)
             .environmentObject(env.countdowns)

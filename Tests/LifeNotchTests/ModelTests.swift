@@ -385,4 +385,16 @@ final class ModuleTests: XCTestCase {
         XCTAssertNil(Plugin.isSafe(url: "file:///etc/passwd"))
         XCTAssertNil(Plugin.isSafe(url: "javascript:alert(1)"))
     }
+
+    func testVPNListParsing() {
+        let output = """
+        Available network connection services in the current set (*=enabled):
+        * (Connected)      3F2A9C1E-1111-2222-3333-444455556666 VPN (com.example.vpn) "Work VPN"                  [VPN:com.example.vpn]
+        * (Disconnected)   AAAAAAAA-1111-2222-3333-444455556666 VPN (com.apple.vpn) "Home, Wi-Fi"                  [VPN:com.apple.vpn]
+        """
+        let list = VPNModel.parse(output)
+        XCTAssertEqual(list.map { $0.name }, ["Work VPN", "Home, Wi-Fi"])
+        XCTAssertTrue(list[0].isConnected)
+        XCTAssertFalse(list[1].isConnected)
+    }
 }
