@@ -43,6 +43,13 @@ final class AppEnvironment: ObservableObject {
     let tennis = TennisModel()
     let markets = MarketsModel()
     let profiles = ProfilesStore()
+    let audio = AudioModel()
+    let screenTime = ScreenTimeModel()
+    let chat = LANChatModel()
+    let activities = ActivityStore()
+    let plugins = PluginManager()
+    let automations: AutomationsModel
+    let notesSync: NotesSync
     private let keyClick = KeyClickModel()
     let countdowns = CountdownStore()
     let capture: ScreenCaptureCoordinator
@@ -72,6 +79,8 @@ final class AppEnvironment: ObservableObject {
         clipboard = ClipboardMonitor(settings: settings)
         messages = MessageHub(settings: settings)
         toolTimer = ToolTimerModel(settings: settings)
+        automations = AutomationsModel(settings: settings)
+        notesSync = NotesSync(settings: settings, notes: notes)
         capture = ScreenCaptureCoordinator(settings: settings, ai: ai, notch: notch)
     }
 
@@ -81,6 +90,15 @@ final class AppEnvironment: ObservableObject {
         sports.start()
         calendar.refreshIfAuthorized()
         extraHotKeys = ExtraHotKeys(env: self)
+        automations.start()
+        notesSync.syncNow()
+        // Screen Time tracking follows its switch.
+        settings.$prefs
+            .map { $0.screenTimeEnabled }
+            .removeDuplicates()
+            .receive(on: DispatchQueue.main)
+            .sink { [weak self] on in if on { self?.screenTime.start() } else { self?.screenTime.stop() } }
+            .store(in: &cancellables)
         // Keyboard click sounds (only when you turned them on and macOS allowed it).
         settings.$prefs
             .map { [$0.keyClickEnabled ? "on" : "off", $0.keyClickSound, String($0.keyClickVolume)] }
@@ -154,6 +172,13 @@ extension View {
             .environmentObject(env.tennis)
             .environmentObject(env.markets)
             .environmentObject(env.profiles)
+            .environmentObject(env.audio)
+            .environmentObject(env.screenTime)
+            .environmentObject(env.chat)
+            .environmentObject(env.activities)
+            .environmentObject(env.plugins)
+            .environmentObject(env.automations)
+            .environmentObject(env.notesSync)
             .environmentObject(env.countdowns)
             .environmentObject(env.capture)
     }

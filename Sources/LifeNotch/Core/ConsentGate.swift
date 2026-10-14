@@ -17,6 +17,8 @@ enum ConsentTopic: String, CaseIterable, Identifiable {
     case voiceRecording
     case windowControl
     case keyboardSounds
+    case trackAppUsage
+    case localChat
 
     var id: String { rawValue }
 
@@ -30,6 +32,8 @@ enum ConsentTopic: String, CaseIterable, Identifiable {
         case .calendarAccess: return "Read my calendar and add events and reminders"
         case .voiceRecording: return "Record my voice and turn it into text on this Mac"
         case .windowControl: return "Move and resize the front window (Accessibility)"
+        case .trackAppUsage: return "Keep a record of which apps I use and for how long"
+        case .localChat: return "Chat with other LifeNotch Macs on my local network"
         case .keyboardSounds: return "Hear when I press keys in any app, to play a click sound"
         }
     }

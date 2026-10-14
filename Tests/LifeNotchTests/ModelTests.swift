@@ -322,4 +322,67 @@ final class ModuleTests: XCTestCase {
         XCTAssertEqual(applied?.theme, .neon)
         XCTAssertEqual(applied?.grantedConsents, [])
     }
+
+    func testChatFramingRoundTrip() {
+        let key = LANChatModel.key(for: "secret room")
+        let message = LANMessage(handle: "Sam", text: "hello")
+        var buffer = (try? LANChatModel.frame(message, key: key)) ?? Data()
+        buffer.append(Data([0, 0]))      // a half-arrived next frame header
+        let decoded = LANChatModel.unframe(&buffer, key: key)
+        XCTAssertEqual(decoded.first?.text, "hello")
+        XCTAssertEqual(buffer.count, 2)
+        // A different room code cannot read it.
+        var again = (try? LANChatModel.frame(message, key: key)) ?? Data()
+        XCTAssertTrue(LANChatModel.unframe(&again, key: LANChatModel.key(for: "other")).isEmpty)
+        XCTAssertEqual(LANChatModel.tag(for: "A"), LANChatModel.tag(for: "a"))
+    }
+
+    func testNotesSyncFormatRoundTrip() {
+        var note = StudyNote(title: "Maths: limits?", body: "Line one\nLine two", source: "AI answer")
+        note.createdAt = Date(timeIntervalSince1970: 1_700_000_000)
+        XCTAssertFalse(NotesSyncFormat.fileName(for: note).contains(":"))
+        let back = NotesSyncFormat.parse(NotesSyncFormat.render(note), fallbackTitle: "x")
+        XCTAssertEqual(back.id, note.id)
+        XCTAssertEqual(back.title, note.title)
+        XCTAssertEqual(back.body, note.body)
+        XCTAssertEqual(back.source, "AI answer")
+        let plain = NotesSyncFormat.parse("Just text", fallbackTitle: "File name")
+        XCTAssertEqual(plain.title, "File name")
+        XCTAssertEqual(plain.body, "Just text")
+    }
+
+    func testAutomationDueRule() {
+        let cal = Calendar.current
+        let now = cal.date(bySettingHour: 9, minute: 0, second: 0, of: Date())!
+        var item = Automation(name: "x", prompt: "p", hour: 8, minute: 30)
+        XCTAssertTrue(AutomationsModel.isDue(item, now: now))
+        item.lastRun = cal.date(bySettingHour: 8, minute: 31, second: 0, of: now)
+        XCTAssertFalse(AutomationsModel.isDue(item, now: now))
+        item.lastRun = nil
+        item.hour = 10
+        XCTAssertFalse(AutomationsModel.isDue(item, now: now))
+    }
+
+    func testLiveActivitiesLimitAndSafety() {
+        let store = ActivityStore()
+        XCTAssertTrue(store.upsert(id: "a", title: "A", progress: 2))
+        XCTAssertTrue(store.upsert(id: "b", title: "B"))
+        XCTAssertFalse(store.upsert(id: "c", title: "C"))
+        XCTAssertTrue(store.upsert(id: "a", title: "A2", progress: 0.5))
+        XCTAssertEqual(store.activities.first?.title, "A2")
+        XCTAssertEqual(ActivityStore.safeSymbol("../evil"), "bolt.fill")
+        store.prune(now: Date().addingTimeInterval(13 * 3600))
+        XCTAssertTrue(store.activities.isEmpty)
+    }
+
+    func testScreenTimeAndPluginURLs() {
+        var data = ScreenTimeData()
+        ScreenTimeModel.add(seconds: 120, app: "Safari", day: Date(), to: &data)
+        ScreenTimeModel.add(seconds: 60, app: "Safari", day: Date(), to: &data)
+        XCTAssertEqual(data.days[ScreenTimeModel.dayKey(Date())]?["Safari"], 180)
+        XCTAssertEqual(ScreenTimeModel.text(seconds: 3900), "1h 5m")
+        XCTAssertNotNil(Plugin.isSafe(url: "https://example.com"))
+        XCTAssertNil(Plugin.isSafe(url: "file:///etc/passwd"))
+        XCTAssertNil(Plugin.isSafe(url: "javascript:alert(1)"))
+    }
 }

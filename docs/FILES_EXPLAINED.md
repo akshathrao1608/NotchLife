@@ -165,6 +165,18 @@ LifeNotch's AI question box (it never sends anything itself). See its own README
 | `Modules/ConvertModel.swift` | File conversion (ImageIO, PDFKit, AVFoundation) |
 | `Modules/FlightRadarModel.swift` | Aircraft near a city from OpenSky |
 | `Modules/HabitStore.swift` / `CountdownStore.swift` | Habits with streaks; days-until list |
+| `Modules/TennisModel.swift`, `MarketsModel.swift` | Tennis scores; delayed stock watchlist |
+| `Modules/KeyClickModel.swift` | Optional keyboard click sounds (Input Monitoring) |
+| `Modules/ProfilesStore.swift` | Saved settings profiles |
+| `Modules/AudioModel.swift` | Volume / output device (CoreAudio) |
+| `Modules/ScreenTimeModel.swift` | Your own app-usage tracker |
+| `Modules/LANChatModel.swift` | Encrypted same-Wi-Fi chat (Bonjour + AES-GCM) |
+| `Modules/ActivityStore.swift` | Live Activities shown in the notch bar |
+| `Modules/AutomationsModel.swift` | Scheduled AI prompts |
+| `Modules/PluginManager.swift` | JSON plugins (data only) |
+| `Modules/NotesSync.swift` | Notes <-> Markdown files in a folder you choose |
+| `AI/AppleIntelligenceClient.swift` | On-Mac Apple model (macOS 26+) |
+| `Games/SkyFlight.swift` | The flight-sim game |
 | `Notch/ExtraHotKeys.swift` | Optional Control+Option shortcuts for capture and window snapping |
 | `AI/OpenAICompatibleClient.swift` | One client for Gemini, Groq, OpenRouter, DeepSeek and Ollama; also `AIOneShot` for quick one-off questions |
 | `Games/Game2048.swift`, `Games/SnakeGame.swift` | The two new games (rules are separate, testable structs) |

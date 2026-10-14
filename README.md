@@ -118,6 +118,29 @@ Not built, and why: *notifications from other apps / iMessage replies*, *Messeng
 
 **Icons below the camera:** Settings > Appearance > "Icons go" (default *Below the camera*) hangs a black strip under the camera and puts the icons in it so the hardware notch can never hide them. *Beside the camera* is the older layout.
 
+**Batch E (from the second feature list):**
+
+| Module | What it does | Notes |
+|---|---|---|
+| **Tennis** | ATP / WTA scores | Demo Data by default (badge); Live = ESPN's unofficial public scoreboard |
+| **Markets** | Delayed watchlist (Stooq, no key) | Quick look only, not financial advice |
+| **Sky Flight** | A flight-sim mini game (Mini Games) | Rings, storm clouds, best score saved |
+| **22 themes** | 6 new (Aurora, Lava, Neon, Midnight, Lavender, Copper) | |
+| **Profiles** | Save / switch whole settings sets | Privacy answers and API keys are never part of a profile |
+| **Keyboard click sounds** | A click on every key in any app | Off by default; needs Input Monitoring; only hears THAT a key was pressed |
+| **Apple Intelligence** | Free on-Mac AI, no key (new provider in Settings > AI) | Needs macOS 26+, Apple Intelligence on, and Xcode 26 |
+| **Audio** | Volume, mute, choose output device | No per-app volume / EQ (macOS doesn't allow it) |
+| **Screen Time** | Your OWN app-usage record | Off by default; app names + minutes only; Apple's real Screen Time is private |
+| **Chat** | Encrypted chat on the same Wi-Fi with a room code | No accounts or servers; not saved; macOS asks for Local Network |
+| **Live Activities** | Up to 2 status items in the notch bar | Via link, Shortcut or Terminal; display only |
+| **AI Automations** | A prompt of yours sent on a schedule | Only while LifeNotch runs; asks every time you create one |
+| **Plugins + scripting** | JSON plugins (no code) and `lifenotch://` commands | See `docs/PLUGINS.md` |
+| **Notes sync** | Notes as Markdown files in a folder you pick (iCloud Drive etc.) | LifeNotch never deletes files |
+
+Not built: *Do It* (AI controlling your screen), *iPhone companion*, *per-app volume/EQ*, *VPN* (you passed),
+*Notch Apple's included AI* (needs their servers; use Apple Intelligence / Ollama instead), and licence,
+beta-channel and support items (they belong to their product, not an app you build yourself).
+
 **Camera blending:** Settings > Appearance > "Blend with the camera" paints the strip beside the camera pure black, and a slider sets the space kept beside the camera.
 
 Left out on purpose: Touch ID lock and crypto prices (your choice).

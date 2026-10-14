@@ -130,6 +130,12 @@ struct ExpandedPanelView: View {
         case .tracking: TrackingView()
         case .tennis: TennisView()
         case .markets: MarketsView()
+        case .audio: AudioView()
+        case .screenTime: ScreenTimeView()
+        case .chat: ChatView()
+        case .activities: ActivitiesView()
+        case .automations: AutomationsView()
+        case .plugins: PluginsView()
         }
     }
 }

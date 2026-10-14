@@ -13,6 +13,7 @@ enum NotchTab: String, CaseIterable, Identifiable, Codable {
     case home, clipboard, todo, timer, world, tools, shelf, search, snippets, shortcuts, translate
     case nowPlaying, windows, quickAdd, voice, convert, flights
     case habits, countdowns, breathe, devices, tracking, tennis, markets
+    case audio, screenTime, chat, activities, automations, plugins
 
     var id: String { rawValue }
 
@@ -53,6 +54,12 @@ enum NotchTab: String, CaseIterable, Identifiable, Codable {
         case .tracking: return "Live Tracking"
         case .tennis: return "Tennis"
         case .markets: return "Markets"
+        case .audio: return "Audio"
+        case .screenTime: return "Screen Time"
+        case .chat: return "Chat"
+        case .activities: return "Live Activities"
+        case .automations: return "AI Automations"
+        case .plugins: return "Plugins"
         }
     }
 
@@ -91,6 +98,12 @@ enum NotchTab: String, CaseIterable, Identifiable, Codable {
         case .tracking: return "shippingbox.fill"
         case .tennis: return "tennisball.fill"
         case .markets: return "chart.line.uptrend.xyaxis"
+        case .audio: return "speaker.wave.2.fill"
+        case .screenTime: return "hourglass"
+        case .chat: return "bubble.left.and.bubble.right.fill"
+        case .activities: return "bolt.horizontal.circle.fill"
+        case .automations: return "clock.badge.checkmark"
+        case .plugins: return "puzzlepiece.extension.fill"
         }
     }
 
@@ -129,6 +142,12 @@ enum NotchTab: String, CaseIterable, Identifiable, Codable {
         case .tracking: return "Parcel links and flight numbers"
         case .tennis: return "ATP and WTA scores"
         case .markets: return "A small delayed-price watchlist"
+        case .audio: return "Volume and where sound plays"
+        case .screenTime: return "Your own app-usage record (off until you turn it on)"
+        case .chat: return "Encrypted chat on the same Wi-Fi, no accounts"
+        case .activities: return "Live status items in the notch"
+        case .automations: return "AI prompts that run on a schedule"
+        case .plugins: return "Add links, snippets and prompts with a JSON file"
         }
     }
 }

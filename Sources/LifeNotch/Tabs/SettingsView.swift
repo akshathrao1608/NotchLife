@@ -16,6 +16,7 @@ struct SettingsView: View {
                 behaviourCard
                 ModulesSettingsCard()
                 ProfilesSettingsCard()
+                NotesSyncSettingsCard()
                 AISettingsCard()
                 BrowserSettingsCard()
                 SportsSettingsCard()

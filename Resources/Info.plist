@@ -63,6 +63,12 @@
     <string>LifeNotch records your voice only while you press Record in Voice Notes. The recording is deleted after it is turned into text.</string>
     <key>NSSpeechRecognitionUsageDescription</key>
     <string>LifeNotch turns your Voice Notes recording into text on this Mac.</string>
+    <key>NSLocalNetworkUsageDescription</key>
+    <string>LifeNotch Chat finds other LifeNotch Macs on your network that use the same room code. Messages are encrypted and not saved.</string>
+    <key>NSBonjourServices</key>
+    <array>
+        <string>_lifenotch-chat._tcp</string>
+    </array>
     <key>NSAppTransportSecurity</key>
     <dict>
         <key>NSAllowsLocalNetworking</key>

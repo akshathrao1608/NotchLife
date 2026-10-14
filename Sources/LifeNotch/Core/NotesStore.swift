@@ -28,6 +28,13 @@ final class NotesStore: ObservableObject {
         save()
     }
 
+    /// Used by notes sync: adds a note that keeps its original id and date.
+    func insertImported(_ note: StudyNote) {
+        guard !notes.contains(where: { $0.id == note.id }) else { return }
+        notes.insert(note, at: 0)
+        save()
+    }
+
     func update(_ note: StudyNote) {
         guard let index = notes.firstIndex(where: { $0.id == note.id }) else { return }
         notes[index] = note

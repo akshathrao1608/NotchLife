@@ -9,8 +9,12 @@ import Foundation
 //   lifenotch://ask?text=…&title=…&url=…
 //        pre-fills the AI tab (used by the optional Safari extension). Needs "Allow the Safari
 //        extension" in Settings > Privacy. It NEVER sends anything: you still press Send.
-//   lifenotch://open?tab=ai|browser|messages|assignments|sports|games|macFun|settings
+//   lifenotch://open?tab=ai|browser|messages|assignments|sports|games|macFun|settings|... (any tab id)
 //        just opens that tab.
+//   lifenotch://activity?id=…&title=…&progress=0.4&symbol=…&detail=…   (or action=end)
+//   lifenotch://timer?minutes=10      lifenotch://todo?title=Buy%20milk
+//        scripting links. They only show or add harmless local items and can be switched off in
+//        Live Activities > "Allow links and Shortcuts to start activities".
 
 enum URLCommands {
     static func handle(_ url: URL, env: AppEnvironment) {
@@ -35,6 +39,20 @@ enum URLCommands {
             }
             env.ai.prefill(text: text, mode: .explainSimply)
             env.notch.open(.ai)
+
+        case "activity":
+            guard env.settings.prefs.allowScriptLinks, let id = value("id"), !id.isEmpty else { return }
+            if value("action") == "end" { env.activities.end(id: id); return }
+            env.activities.upsert(id: id, title: value("title") ?? id, symbol: value("symbol") ?? "bolt.fill",
+                                  progress: value("progress").flatMap(Double.init), detail: value("detail") ?? "")
+
+        case "timer":
+            guard env.settings.prefs.allowScriptLinks, let minutes = value("minutes").flatMap(Double.init), minutes > 0, minutes <= 600 else { return }
+            env.toolTimer.startCountdown(seconds: minutes * 60)
+
+        case "todo":
+            guard env.settings.prefs.allowScriptLinks, let title = value("title"), !title.isEmpty else { return }
+            env.todos.add(String(title.prefix(200)))
 
         case "open":
             if let name = value("tab"), let tab = NotchTab(rawValue: name) { env.notch.open(tab) }

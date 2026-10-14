@@ -42,6 +42,7 @@ struct CompactBarView: View {
     @EnvironmentObject private var stats: SystemStatsModel
     @EnvironmentObject private var messages: MessageHub
     @EnvironmentObject private var toolTimer: ToolTimerModel
+    @EnvironmentObject private var activities: ActivityStore
 
     var body: some View {
         let geometry = notch.geometry
@@ -113,6 +114,14 @@ struct CompactBarView: View {
     private func leftItems(_ prefs: Preferences) -> [AnyView] {
         var items: [AnyView] = []
 
+        for activity in activities.activities {
+            items.append(AnyView(
+                CompactChip(icon: activity.symbol,
+                            text: activity.progress.map { "\(Int($0 * 100))%" } ?? activity.title,
+                            tint: .cyan, keepsText: true,
+                            label: "\(activity.title)\(activity.detail.isEmpty ? "" : ", " + activity.detail)")
+            ))
+        }
         if prefs.showTimerChip, pomodoro.isActive {
             items.append(AnyView(
                 CompactChip(icon: pomodoro.isRunning ? "timer" : "pause.fill",

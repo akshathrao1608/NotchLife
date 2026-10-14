@@ -19,7 +19,9 @@ extension NotchTab: AppEnum {
         .quickAdd: "Quick Add", .voice: "Voice Notes", .convert: "Convert", .flights: "Flight Radar",
         .habits: "Habits", .countdowns: "Days Until", .breathe: "Breathe",
         .devices: "Devices", .tracking: "Live Tracking",
-        .tennis: "Tennis", .markets: "Markets"
+        .tennis: "Tennis", .markets: "Markets",
+        .audio: "Audio", .screenTime: "Screen Time", .chat: "Chat", .activities: "Live Activities",
+        .automations: "AI Automations", .plugins: "Plugins"
     ]
 }
 
@@ -80,6 +82,34 @@ struct AddMessageNoticeIntent: AppIntent {
         await MainActor.run {
             AppEnvironment.shared.messages.addNotice(source: source, sender: sender, preview: preview)
         }
+        return .result()
+    }
+}
+
+struct StartLiveActivityIntent: AppIntent {
+    static let title: LocalizedStringResource = "Start a LifeNotch Live Activity"
+    static let description = IntentDescription("Shows a status item (and optional progress bar) in the notch. Up to two at once.")
+
+    @Parameter(title: "Name") var name: String
+    @Parameter(title: "Progress (0 to 1, optional)") var progress: Double?
+    @Parameter(title: "Detail", default: "") var detail: String
+
+    func perform() async throws -> some IntentResult {
+        await MainActor.run {
+            let env = AppEnvironment.shared
+            guard env.settings.prefs.allowScriptLinks else { return }
+            env.activities.upsert(id: name, title: name, progress: progress, detail: detail)
+        }
+        return .result()
+    }
+}
+
+struct EndLiveActivityIntent: AppIntent {
+    static let title: LocalizedStringResource = "End a LifeNotch Live Activity"
+    @Parameter(title: "Name") var name: String
+
+    func perform() async throws -> some IntentResult {
+        await MainActor.run { AppEnvironment.shared.activities.end(id: name) }
         return .result()
     }
 }
