@@ -177,6 +177,10 @@ LifeNotch's AI question box (it never sends anything itself). See its own README
 | `Modules/NotesSync.swift` | Notes <-> Markdown files in a folder you choose |
 | `AI/AppleIntelligenceClient.swift` | On-Mac Apple model (macOS 26+) |
 | `Games/SkyFlight.swift` | The flight-sim game |
+| `Scores/ScoresModels.swift` | Every sport / league, games, stats and follow lists |
+| `Scores/ScoresParser.swift` | Reads ESPN's JSON defensively (scoreboard, summary, standings, teams) |
+| `Scores/ScoresStore.swift` | Fetching, what you follow, notch-bar chip and reminders |
+| `Tabs/ScoresView.swift` | The Scores tab: My Sports, Browse, Tables, follow picker, match detail |
 | `Notch/ExtraHotKeys.swift` | Optional Control+Option shortcuts for capture and window snapping |
 | `AI/OpenAICompatibleClient.swift` | One client for Gemini, Groq, OpenRouter, DeepSeek and Ollama; also `AIOneShot` for quick one-off questions |
 | `Games/Game2048.swift`, `Games/SnakeGame.swift` | The two new games (rules are separate, testable structs) |

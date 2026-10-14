@@ -56,6 +56,9 @@ struct Preferences: Codable, Equatable {
     var paletteHotKeyEnabled = true   // Control + Option + P opens the command palette
     var captureHotKeysEnabled = true  // Control + Option + S (ask AI about the screen) and X (copy text from the screen)
     var tennisLive = false
+    var scoresNotifications = false
+    var scoresBrowseLeague = "soccer/eng.1"
+    var scoresTableLeague = "soccer/eng.1"
     var chatHandle = "Guest-\(Int.random(in: 1000...9999))"
     var screenTimeEnabled = false
     var allowScriptLinks = true       // lifenotch://activity etc. from links, Shortcuts and Terminal

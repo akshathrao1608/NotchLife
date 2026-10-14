@@ -49,6 +49,7 @@ final class AppEnvironment: ObservableObject {
     let activities = ActivityStore()
     let plugins = PluginManager()
     let vpn = VPNModel()
+    let scores: ScoresStore
     let automations: AutomationsModel
     let notesSync: NotesSync
     private let keyClick = KeyClickModel()
@@ -81,6 +82,7 @@ final class AppEnvironment: ObservableObject {
         messages = MessageHub(settings: settings)
         toolTimer = ToolTimerModel(settings: settings)
         automations = AutomationsModel(settings: settings)
+        scores = ScoresStore(settings: settings)
         notesSync = NotesSync(settings: settings, notes: notes)
         capture = ScreenCaptureCoordinator(settings: settings, ai: ai, notch: notch)
     }
@@ -92,6 +94,12 @@ final class AppEnvironment: ObservableObject {
         calendar.refreshIfAuthorized()
         extraHotKeys = ExtraHotKeys(env: self)
         automations.start()
+        // Keep followed teams fresh for the notch bar even when the Scores tab is closed (only if you follow something).
+        Timer.scheduledTimer(withTimeInterval: 120, repeats: true) { [weak self] _ in
+            guard let self = self, self.scores.hasFollows else { return }
+            Task { await self.scores.refreshFollowed() }
+        }
+        if scores.hasFollows { Task { await scores.refreshFollowed() } }
         notesSync.syncNow()
         // Screen Time tracking follows its switch.
         settings.$prefs
@@ -179,6 +187,7 @@ extension View {
             .environmentObject(env.activities)
             .environmentObject(env.plugins)
             .environmentObject(env.vpn)
+            .environmentObject(env.scores)
             .environmentObject(env.automations)
             .environmentObject(env.notesSync)
             .environmentObject(env.countdowns)

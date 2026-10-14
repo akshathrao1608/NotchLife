@@ -13,7 +13,7 @@ enum NotchTab: String, CaseIterable, Identifiable, Codable {
     case home, clipboard, todo, timer, world, tools, shelf, search, snippets, shortcuts, translate
     case nowPlaying, windows, quickAdd, voice, convert, flights
     case habits, countdowns, breathe, devices, tracking, tennis, markets
-    case audio, screenTime, chat, activities, automations, plugins, vpn
+    case audio, screenTime, chat, activities, automations, plugins, vpn, scores
 
     var id: String { rawValue }
 
@@ -61,6 +61,7 @@ enum NotchTab: String, CaseIterable, Identifiable, Codable {
         case .automations: return "AI Automations"
         case .plugins: return "Plugins"
         case .vpn: return "VPN"
+        case .scores: return "Scores"
         }
     }
 
@@ -106,6 +107,7 @@ enum NotchTab: String, CaseIterable, Identifiable, Codable {
         case .automations: return "clock.badge.checkmark"
         case .plugins: return "puzzlepiece.extension.fill"
         case .vpn: return "lock.shield.fill"
+        case .scores: return "sportscourt.fill"
         }
     }
 
@@ -151,6 +153,7 @@ enum NotchTab: String, CaseIterable, Identifiable, Codable {
         case .automations: return "AI prompts that run on a schedule"
         case .plugins: return "Add links, snippets and prompts with a JSON file"
         case .vpn: return "Connect or disconnect your Mac's VPNs"
+        case .scores: return "All sports: pick your teams, live scores, detailed stats"
         }
     }
 }

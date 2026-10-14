@@ -21,7 +21,7 @@ extension NotchTab: AppEnum {
         .devices: "Devices", .tracking: "Live Tracking",
         .tennis: "Tennis", .markets: "Markets",
         .audio: "Audio", .screenTime: "Screen Time", .chat: "Chat", .activities: "Live Activities",
-        .automations: "AI Automations", .plugins: "Plugins", .vpn: "VPN"
+        .automations: "AI Automations", .plugins: "Plugins", .vpn: "VPN", .scores: "Scores"
     ]
 }
 

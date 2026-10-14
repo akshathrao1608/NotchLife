@@ -87,7 +87,7 @@ final class TennisModel: ObservableObject {
                 }
                 let status = (comp["status"] as? [String: Any])?["type"] as? [String: Any]
                 let startText = comp["date"] as? String ?? comp["startDate"] as? String
-                let start = startText.flatMap { iso.date(from: $0) ?? isoPlain.date(from: $0) }
+                let start = startText.flatMap { ScoresParser.date($0) ?? iso.date(from: $0) ?? isoPlain.date(from: $0) }
                 let round = ((comp["round"] as? [String: Any])?["displayName"] as? String) ?? ""
                 result.append(TennisMatch(id: (comp["id"] as? String) ?? UUID().uuidString,
                                           tournament: tournament, round: round,

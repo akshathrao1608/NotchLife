@@ -43,6 +43,7 @@ struct CompactBarView: View {
     @EnvironmentObject private var messages: MessageHub
     @EnvironmentObject private var toolTimer: ToolTimerModel
     @EnvironmentObject private var activities: ActivityStore
+    @EnvironmentObject private var scoresStore: ScoresStore
 
     var body: some View {
         let geometry = notch.geometry
@@ -149,6 +150,11 @@ struct CompactBarView: View {
                             text: "\(subject) \(next.dueSummary())",
                             tint: urgent ? .red : .white,
                             label: "Next assignment: \(next.title), \(due)")
+            ))
+        }
+        if prefs.showCountdownChip, let info = scoresStore.compactInfo() {
+            items.append(AnyView(
+                CompactChip(icon: info.icon, text: info.text, tint: info.isLive ? .red : .white, keepsText: info.isLive, label: info.label)
             ))
         }
         if prefs.showCountdownChip, let info = sports.compactInfo() {

@@ -141,6 +141,8 @@ Not built: *Do It* (AI controlling your screen), *iPhone companion*, *per-app vo
 *Notch Apple's included AI* (needs their servers; use Apple Intelligence / Ollama instead), and licence,
 beta-channel and support items (they belong to their product, not an app you build yourself).
 
+**Scores tab (all sports, Apple Sports style):** choose the sports, leagues and teams you follow (star icon). *My Sports* shows their live scores, coming fixtures and results; tap a match for team stats, player box scores or line-ups, key events / scoring plays, top performers, venue, TV and referees. *Browse* shows any league on any day, and *Tables* shows standings. Your next or live match appears in the notch bar, and you can switch on a reminder 15 minutes before your teams play. Covers football (19 leagues and cups), NBA / WNBA / NCAA basketball, NFL / college football, MLB, NHL, AFL, ATP / WTA tennis, UFC, PGA / LPGA golf, F1, IndyCar and NASCAR. Data comes from ESPN's public feeds (unofficial, no key): the most detailed free source available. Official feeds (Opta, Sportradar) need paid keys. Rugby and cricket aren't included because ESPN identifies them by numeric competition ids that I couldn't verify.
+
 **VPN tab:** lists the VPNs already set up on your Mac (System Settings > VPN, or created by an app like Proton VPN or Cloudflare WARP), shows their status and Connects / Disconnects them after asking. It also links to free VPN apps' official sites. LifeNotch does not carry your traffic itself.
 
 **Camera blending:** Settings > Appearance > "Blend with the camera" paints the strip beside the camera pure black, and a slider sets the space kept beside the camera.

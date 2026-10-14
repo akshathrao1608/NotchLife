@@ -397,4 +397,36 @@ final class ModuleTests: XCTestCase {
         XCTAssertTrue(list[0].isConnected)
         XCTAssertFalse(list[1].isConnected)
     }
+
+    func testScoresParsing() {
+        XCTAssertNotNil(ScoresParser.date("2026-10-14T19:00Z"))
+        XCTAssertEqual(Set(SportsCatalog.leagues.map { $0.id }).count, SportsCatalog.leagues.count)
+
+        let league = SportsCatalog.league("basketball/nba")!
+        let board = #"{"events":[{"id":"401","name":"Home at Away","date":"2026-10-14T19:00Z","competitions":[{"id":"401","date":"2026-10-14T19:00Z","venue":{"fullName":"Big Arena","address":{"city":"Boston"}},"broadcasts":[{"names":["ESPN"]}],"status":{"displayClock":"4:12","type":{"state":"in","shortDetail":"4:12 - 3rd"}},"competitors":[{"homeAway":"home","id":"1","score":"88","winner":false,"team":{"id":"1","displayName":"Home Team","abbreviation":"HOM","color":"ff0000"},"records":[{"summary":"3-1"}],"linescores":[{"value":20},{"value":25}]},{"homeAway":"away","id":"2","score":"90","team":{"id":"2","displayName":"Away Team","abbreviation":"AWY"}}]}]}]}"#
+        let games = ScoresParser.games(from: Data(board.utf8), league: league)
+        XCTAssertEqual(games.count, 1)
+        XCTAssertEqual(games[0].first?.abbr, "AWY")          // away first
+        XCTAssertEqual(games[0].second?.record, "3-1")
+        XCTAssertEqual(games[0].second?.lines, ["20", "25"])
+        XCTAssertEqual(games[0].state, .live)
+        XCTAssertEqual(games[0].venue, "Big Arena, Boston")
+        XCTAssertEqual(games[0].broadcast, "ESPN")
+        XCTAssertTrue(games[0].involves(teamID: "2"))
+
+        let summary = #"{"boxscore":{"teams":[{"homeAway":"home","team":{"displayName":"H"},"statistics":[{"name":"fg","label":"FG","displayValue":"40"}]},{"homeAway":"away","team":{"displayName":"A"},"statistics":[{"name":"fg","label":"FG","displayValue":"38"}]}],"players":[{"team":{"displayName":"A"},"statistics":[{"name":"stats","labels":["MIN","PTS"],"athletes":[{"athlete":{"displayName":"Ann"},"stats":["30","22"]}]}]}]},"gameInfo":{"attendance":1234,"venue":{"fullName":"Big Arena"}}}"#
+        let detail = ScoresParser.detail(from: Data(summary.utf8))
+        XCTAssertEqual(detail.teamStats.first?.first, "38")   // away on the left
+        XCTAssertEqual(detail.teamStats.first?.second, "40")
+        XCTAssertEqual(detail.tables.first?.rows.first, ["Ann", "30", "22"])
+        XCTAssertTrue(detail.info.contains("Attendance: 1234"))
+
+        let table = #"{"children":[{"name":"East","standings":{"entries":[{"team":{"id":"1","displayName":"H","abbreviation":"HOM"},"stats":[{"name":"wins","abbreviation":"W","displayValue":"10","value":10},{"name":"losses","abbreviation":"L","displayValue":"2","value":2},{"name":"rank","value":1}]}]}}]}"#
+        let groups = ScoresParser.standings(from: Data(table.utf8))
+        XCTAssertEqual(groups.first?.columns, ["W", "L"])
+        XCTAssertEqual(groups.first?.rows.first?.values, ["10", "2"])
+
+        let teams = #"{"sports":[{"leagues":[{"teams":[{"team":{"id":"9","displayName":"Zed FC","abbreviation":"ZED"}},{"team":{"id":"3","displayName":"Alpha FC"}}]}]}]}"#
+        XCTAssertEqual(ScoresParser.teams(from: Data(teams.utf8)).map { $0.name }, ["Alpha FC", "Zed FC"])
+    }
 }
