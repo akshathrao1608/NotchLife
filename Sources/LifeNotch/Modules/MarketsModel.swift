@@ -8,10 +8,10 @@ import Foundation
 struct Quote: Identifiable, Equatable {
     let symbol: String
     let price: Double
-    let open: Double
+    let openPrice: Double
     let date: String
     var id: String { symbol }
-    var changePercent: Double { open > 0 ? (price - open) / open * 100 : 0 }
+    var changePercent: Double { openPrice > 0 ? (price - openPrice) / openPrice * 100 : 0 }
 }
 
 final class MarketsModel: ObservableObject {
@@ -54,8 +54,8 @@ final class MarketsModel: ObservableObject {
     static func parse(_ csv: String) -> [Quote] {
         csv.split(whereSeparator: \.isNewline).dropFirst().compactMap { line in
             let f = line.split(separator: ",", omittingEmptySubsequences: false).map(String.init)
-            guard f.count >= 7, let open = Double(f[3]), let close = Double(f[6]) else { return nil }
-            return Quote(symbol: f[0].lowercased(), price: close, open: open, date: f[1])
+            guard f.count >= 7, let openValue = Double(f[3]), let close = Double(f[6]) else { return nil }
+            return Quote(symbol: f[0].lowercased(), price: close, openPrice: openValue, date: f[1])
         }
     }
 
