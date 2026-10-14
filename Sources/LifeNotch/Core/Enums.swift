@@ -12,7 +12,7 @@ enum NotchTab: String, CaseIterable, Identifiable, Codable {
     // More modules (open them from the grid button or the command palette)
     case home, clipboard, todo, timer, world, tools, shelf, search, snippets, shortcuts, translate
     case nowPlaying, windows, quickAdd, voice, convert, flights
-    case habits, countdowns, breathe, devices, tracking
+    case habits, countdowns, breathe, devices, tracking, tennis, markets
 
     var id: String { rawValue }
 
@@ -51,6 +51,8 @@ enum NotchTab: String, CaseIterable, Identifiable, Codable {
         case .breathe: return "Breathe"
         case .devices: return "Devices"
         case .tracking: return "Live Tracking"
+        case .tennis: return "Tennis"
+        case .markets: return "Markets"
         }
     }
 
@@ -87,6 +89,8 @@ enum NotchTab: String, CaseIterable, Identifiable, Codable {
         case .breathe: return "wind"
         case .devices: return "headphones"
         case .tracking: return "shippingbox.fill"
+        case .tennis: return "tennisball.fill"
+        case .markets: return "chart.line.uptrend.xyaxis"
         }
     }
 
@@ -123,6 +127,8 @@ enum NotchTab: String, CaseIterable, Identifiable, Codable {
         case .breathe: return "A calming breathing guide"
         case .devices: return "AirPods and accessory battery"
         case .tracking: return "Parcel links and flight numbers"
+        case .tennis: return "ATP and WTA scores"
+        case .markets: return "A small delayed-price watchlist"
         }
     }
 }
@@ -247,6 +253,7 @@ enum Appearance: String, CaseIterable, Identifiable, Codable {
 enum NotchTheme: String, CaseIterable, Identifiable, Codable {
     case black, transparent, glow, minimal, racing, football, space
     case ocean, sunset, forest, rose, mint, gold, ice, crimson, graphite
+    case aurora, lava, neon, midnight, lavender, copper
     var id: String { rawValue }
 
     var title: String {
@@ -267,6 +274,12 @@ enum NotchTheme: String, CaseIterable, Identifiable, Codable {
         case .ice: return "Ice"
         case .crimson: return "Crimson"
         case .graphite: return "Graphite"
+        case .aurora: return "Aurora"
+        case .lava: return "Lava"
+        case .neon: return "Neon"
+        case .midnight: return "Midnight"
+        case .lavender: return "Lavender"
+        case .copper: return "Copper"
         }
     }
 
@@ -289,6 +302,12 @@ enum NotchTheme: String, CaseIterable, Identifiable, Codable {
         case .ice: return Color(red: 0.7, green: 0.88, blue: 1.0)
         case .crimson: return Color(red: 0.9, green: 0.15, blue: 0.3)
         case .graphite: return Color(white: 0.7)
+        case .aurora: return Color(red: 0.3, green: 0.95, blue: 0.65)
+        case .lava: return Color(red: 1.0, green: 0.4, blue: 0.1)
+        case .neon: return Color(red: 0.2, green: 1.0, blue: 0.9)
+        case .midnight: return Color(red: 0.45, green: 0.5, blue: 0.95)
+        case .lavender: return Color(red: 0.75, green: 0.65, blue: 1.0)
+        case .copper: return Color(red: 0.85, green: 0.5, blue: 0.3)
         }
     }
 
@@ -310,6 +329,12 @@ enum NotchTheme: String, CaseIterable, Identifiable, Codable {
         case .ice: return [.black, Color(red: 0.05, green: 0.12, blue: 0.2)]
         case .crimson: return [.black, Color(red: 0.2, green: 0.0, blue: 0.05)]
         case .graphite: return [.black, Color(white: 0.14)]
+        case .aurora: return [.black, Color(red: 0.02, green: 0.16, blue: 0.14), Color(red: 0.08, green: 0.08, blue: 0.22)]
+        case .lava: return [.black, Color(red: 0.3, green: 0.07, blue: 0.0)]
+        case .neon: return [.black, Color(red: 0.0, green: 0.14, blue: 0.16)]
+        case .midnight: return [.black, Color(red: 0.03, green: 0.04, blue: 0.16)]
+        case .lavender: return [.black, Color(red: 0.14, green: 0.1, blue: 0.24)]
+        case .copper: return [.black, Color(red: 0.2, green: 0.1, blue: 0.05)]
         }
     }
 
@@ -376,7 +401,7 @@ enum CountdownSource: String, CaseIterable, Identifiable, Codable {
 }
 
 enum GameKind: String, CaseIterable, Identifiable, Codable {
-    case reaction, memory, maths, penalty, f1Lights, wordRush, game2048, snake
+    case reaction, memory, maths, penalty, f1Lights, wordRush, game2048, snake, skyFlight
     var id: String { rawValue }
 
     var title: String {
@@ -389,6 +414,7 @@ enum GameKind: String, CaseIterable, Identifiable, Codable {
         case .wordRush: return "Word Rush"
         case .game2048: return "2048"
         case .snake: return "Snake"
+        case .skyFlight: return "Sky Flight"
         }
     }
 
@@ -402,6 +428,7 @@ enum GameKind: String, CaseIterable, Identifiable, Codable {
         case .wordRush: return "textformat.abc"
         case .game2048: return "square.grid.2x2.fill"
         case .snake: return "scribble.variable"
+        case .skyFlight: return "airplane"
         }
     }
 
@@ -415,6 +442,7 @@ enum GameKind: String, CaseIterable, Identifiable, Codable {
         case .wordRush: return "Make words from six letters in 60 seconds."
         case .game2048: return "Slide and merge tiles to reach 2048. Arrow keys."
         case .snake: return "Eat, grow, don't hit the walls or yourself."
+        case .skyFlight: return "Flight sim: fly through the rings, dodge storm clouds. Up / down arrows."
         }
     }
 }
@@ -444,7 +472,7 @@ enum FootballSourceChoice: String, CaseIterable, Identifiable, Codable {
 // MARK: - AI
 
 enum AIProviderKind: String, CaseIterable, Identifiable, Codable {
-    case anthropic, openai, gemini, groq, openRouter, deepSeek, ollama
+    case anthropic, openai, gemini, groq, openRouter, deepSeek, ollama, appleOnDevice
     var id: String { rawValue }
 
     var title: String {
@@ -456,6 +484,7 @@ enum AIProviderKind: String, CaseIterable, Identifiable, Codable {
         case .openRouter: return "OpenRouter (free models)"
         case .deepSeek: return "DeepSeek"
         case .ollama: return "Ollama (on this Mac, no key)"
+        case .appleOnDevice: return "Apple Intelligence (on this Mac, no key)"
         }
     }
 
@@ -468,6 +497,7 @@ enum AIProviderKind: String, CaseIterable, Identifiable, Codable {
         case .openRouter: return URL(string: "https://openrouter.ai/keys")!
         case .deepSeek: return URL(string: "https://platform.deepseek.com/api_keys")!
         case .ollama: return URL(string: "https://ollama.com/download")!
+        case .appleOnDevice: return URL(string: "https://support.apple.com/en-us/121115")!
         }
     }
 
@@ -481,6 +511,7 @@ enum AIProviderKind: String, CaseIterable, Identifiable, Codable {
         case .openRouter: return "google/gemini-2.0-flash-exp:free"
         case .deepSeek: return "deepseek-chat"
         case .ollama: return "gemma3:4b"
+        case .appleOnDevice: return "on-device"
         }
     }
 
@@ -492,14 +523,14 @@ enum AIProviderKind: String, CaseIterable, Identifiable, Codable {
         case .openRouter: return "https://openrouter.ai/api/v1"
         case .deepSeek: return "https://api.deepseek.com/v1"
         case .ollama: return "http://localhost:11434/v1"
-        case .anthropic, .openai: return nil
+        case .anthropic, .openai, .appleOnDevice: return nil
         }
     }
 
-    var needsKey: Bool { self != .ollama }
+    var needsKey: Bool { self != .ollama && self != .appleOnDevice }
     /// Web search through the provider is only wired up for these two.
     var supportsWebSearch: Bool { self == .anthropic || self == .openai }
-    var isLocal: Bool { self == .ollama }
+    var isLocal: Bool { self == .ollama || self == .appleOnDevice }
 
     var keychainAccount: String { "apikey.\(rawValue)" }
 }

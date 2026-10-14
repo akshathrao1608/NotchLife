@@ -40,6 +40,10 @@ final class AppEnvironment: ObservableObject {
     let habits = HabitStore()
     let devices = DevicesModel()
     let tracking = TrackingModel()
+    let tennis = TennisModel()
+    let markets = MarketsModel()
+    let profiles = ProfilesStore()
+    private let keyClick = KeyClickModel()
     let countdowns = CountdownStore()
     let capture: ScreenCaptureCoordinator
     private var extraHotKeys: ExtraHotKeys?
@@ -77,6 +81,13 @@ final class AppEnvironment: ObservableObject {
         sports.start()
         calendar.refreshIfAuthorized()
         extraHotKeys = ExtraHotKeys(env: self)
+        // Keyboard click sounds (only when you turned them on and macOS allowed it).
+        settings.$prefs
+            .map { [$0.keyClickEnabled ? "on" : "off", $0.keyClickSound, String($0.keyClickVolume)] }
+            .removeDuplicates()
+            .receive(on: DispatchQueue.main)
+            .sink { [weak self] _ in self?.applyKeyClick() }
+            .store(in: &cancellables)
         // Battery and Wi-Fi are only read in the background while the compact bar shows them.
         settings.$prefs
             .map { $0.showBattery || $0.showWifi }
@@ -86,6 +97,21 @@ final class AppEnvironment: ObservableObject {
                 if needed { self?.stats.startLightRefresh() } else { self?.stats.stopLightRefresh() }
             }
             .store(in: &cancellables)
+    }
+}
+
+extension AppEnvironment {
+    fileprivate func applyKeyClick() {
+        let prefs = settings.prefs
+        if prefs.keyClickEnabled {
+            if !keyClick.start(soundName: prefs.keyClickSound, volume: prefs.keyClickVolume) {
+                settings.prefs.keyClickEnabled = false
+                ModalHelper.info(title: "Allow Input Monitoring first",
+                                 message: "Open System Settings > Privacy & Security > Input Monitoring, switch LifeNotch on, then turn \"Keyboard click sounds\" on again.")
+            }
+        } else {
+            keyClick.stop()
+        }
     }
 }
 
@@ -125,6 +151,9 @@ extension View {
             .environmentObject(env.habits)
             .environmentObject(env.devices)
             .environmentObject(env.tracking)
+            .environmentObject(env.tennis)
+            .environmentObject(env.markets)
+            .environmentObject(env.profiles)
             .environmentObject(env.countdowns)
             .environmentObject(env.capture)
     }

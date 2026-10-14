@@ -282,4 +282,44 @@ final class ModuleTests: XCTestCase {
         XCTAssertEqual(gadgets.first?.name, "My AirPods")
         XCTAssertEqual(gadgets.first?.batteries.map { $0.percent }, [80, 55])
     }
+
+    func testSkyFlight() {
+        var state = SkyFlightState()
+        state.objects = [SkyObject(kind: .ring, x: SkyFlightState.planeX, y: state.planeY)]
+        var generator = SystemRandomNumberGenerator()
+        state.step(dt: 0.01, using: &generator)
+        XCTAssertEqual(state.score, 1)
+        state.objects = [SkyObject(kind: .storm, x: SkyFlightState.planeX, y: state.planeY)]
+        state.step(dt: 0.01, using: &generator)
+        XCTAssertFalse(state.alive)
+    }
+
+    func testMarketsParseAndNormalise() {
+        let csv = "Symbol,Date,Time,Open,High,Low,Close,Volume\nAAPL.US,2026-10-14,22:00:00,100,105,99,104,12345\n"
+        let quotes = MarketsModel.parse(csv)
+        XCTAssertEqual(quotes.first?.symbol, "aapl.us")
+        XCTAssertEqual(quotes.first?.changePercent ?? 0, 4, accuracy: 0.001)
+        XCTAssertEqual(MarketsModel.normalise("TSLA"), "tsla.us")
+        XCTAssertEqual(MarketsModel.normalise("^spx"), "^spx")
+        XCTAssertNil(MarketsModel.normalise("bad symbol!"))
+    }
+
+    func testTennisParse() {
+        let json = #"{"events":[{"name":"Demo Open","competitions":[{"id":"1","competitors":[{"athlete":{"displayName":"A"},"linescores":[{"value":6.0},{"value":4.0}]},{"athlete":{"displayName":"B"},"linescores":[{"value":3.0},{"value":6.0}]}],"status":{"type":{"state":"in","shortDetail":"2nd set"}}}]}]}"#
+        let matches = TennisModel.parse(Data(json.utf8))
+        XCTAssertEqual(matches.first?.scoreText, "6-3  4-6")
+        XCTAssertEqual(matches.first?.state, "in")
+    }
+
+    func testProfileKeepsPrivacyAnswers() throws {
+        var saved = Preferences()
+        saved.theme = .neon
+        saved.grantedConsents = ["readClipboard"]
+        let profile = SettingsProfile(name: "x", data: try JSONEncoder().encode(saved))
+        var current = Preferences()
+        current.grantedConsents = []
+        let applied = ProfilesStore.applied(profile, over: current)
+        XCTAssertEqual(applied?.theme, .neon)
+        XCTAssertEqual(applied?.grantedConsents, [])
+    }
 }

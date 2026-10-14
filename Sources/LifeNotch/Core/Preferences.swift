@@ -55,6 +55,11 @@ struct Preferences: Codable, Equatable {
     var pinnedTabs: [NotchTab] = NotchTab.core
     var paletteHotKeyEnabled = true   // Control + Option + P opens the command palette
     var captureHotKeysEnabled = true  // Control + Option + S (ask AI about the screen) and X (copy text from the screen)
+    var tennisLive = false
+    var tennisTour = "atp"
+    var keyClickEnabled = false
+    var keyClickSound = "Tink"
+    var keyClickVolume = 0.3
     var windowHotKeysEnabled = false  // Control + Option + arrows etc. snap the front window (needs Accessibility)
     var lastMacFunSection: MacFunSection = .focus
 

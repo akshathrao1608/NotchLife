@@ -77,6 +77,7 @@ extension AIProviderKind {
         switch self {
         case .anthropic: return AnthropicClient()
         case .openai: return OpenAIClient()
+        case .appleOnDevice: return AppleIntelligenceClient()
         default: return OpenAICompatibleClient(baseURL: compatibleBaseURL ?? "", sendsKey: needsKey)
         }
     }

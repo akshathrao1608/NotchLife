@@ -16,6 +16,7 @@ enum ConsentTopic: String, CaseIterable, Identifiable {
     case calendarAccess
     case voiceRecording
     case windowControl
+    case keyboardSounds
 
     var id: String { rawValue }
 
@@ -29,6 +30,7 @@ enum ConsentTopic: String, CaseIterable, Identifiable {
         case .calendarAccess: return "Read my calendar and add events and reminders"
         case .voiceRecording: return "Record my voice and turn it into text on this Mac"
         case .windowControl: return "Move and resize the front window (Accessibility)"
+        case .keyboardSounds: return "Hear when I press keys in any app, to play a click sound"
         }
     }
 }

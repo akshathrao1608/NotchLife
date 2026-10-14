@@ -128,6 +128,8 @@ struct ExpandedPanelView: View {
         case .breathe: BreatheView()
         case .devices: DevicesView()
         case .tracking: TrackingView()
+        case .tennis: TennisView()
+        case .markets: MarketsView()
         }
     }
 }

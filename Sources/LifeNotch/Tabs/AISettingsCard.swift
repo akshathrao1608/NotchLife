@@ -53,6 +53,16 @@ struct AISettingsCard: View {
 
             if provider.needsKey {
                 keySection
+            } else if provider == .appleOnDevice {
+                VStack(alignment: .leading, spacing: 4) {
+                    Label("Apple's own model, built into macOS. No key, no account, nothing sent online.", systemImage: "lock.shield")
+                        .lnFont(11.5, .semibold)
+                        .foregroundStyle(.green)
+                    Text("Needs macOS 26 or newer on a Mac with Apple Intelligence turned on (System Settings > Apple Intelligence & Siri), and LifeNotch built with Xcode 26. It answers text questions only (no images or PDFs), and its answers are shorter than a big cloud model's.")
+                        .lnFont(11)
+                        .foregroundStyle(.secondary)
+                    Link("About Apple Intelligence", destination: provider.keysPage).lnFont(11)
+                }
             } else {
                 VStack(alignment: .leading, spacing: 4) {
                     Label("Runs on this Mac. No key, no account, nothing sent online.", systemImage: "lock.shield")

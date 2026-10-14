@@ -87,6 +87,7 @@ struct GamesView: View {
         case .wordRush: WordRushGame()
         case .game2048: Game2048View()
         case .snake: SnakeGameView()
+        case .skyFlight: SkyFlightView()
         }
     }
 }

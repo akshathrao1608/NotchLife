@@ -19,6 +19,7 @@ struct GameScoresData: Codable, Equatable {
     var wordRushBest: Int?
     var best2048: Int?
     var bestSnake: Int?
+    var bestSkyFlight: Int?
 }
 
 final class GameScores: ObservableObject {
@@ -101,6 +102,14 @@ final class GameScores: ObservableObject {
     }
 
     @discardableResult
+    func submitSkyFlight(score: Int) -> Bool {
+        guard score > (data.bestSkyFlight ?? 0) else { return false }
+        data.bestSkyFlight = score
+        save()
+        return true
+    }
+
+    @discardableResult
     func submitSnake(score: Int) -> Bool {
         guard score > (data.bestSnake ?? 0) else { return false }
         data.bestSnake = score
@@ -118,6 +127,7 @@ final class GameScores: ObservableObject {
         case .wordRush: return data.wordRushBest.map { "\($0) pts" }
         case .game2048: return data.best2048.map { "\($0) pts" }
         case .snake: return data.bestSnake.map { "\($0) apples" }
+        case .skyFlight: return data.bestSkyFlight.map { "\($0) rings" }
         case .maths:
             guard let best = data.mathsBest.values.max() else { return nil }
             return "\(best) right"
