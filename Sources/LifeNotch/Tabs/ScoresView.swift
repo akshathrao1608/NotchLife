@@ -53,9 +53,33 @@ struct ScoresView: View {
             if let updated = store.updated {
                 Text("Updated \(updated.formatted(date: .omitted, time: .shortened))").lnFont(10).foregroundStyle(.secondary)
             }
-            LNIconButton(systemName: "arrow.clockwise", label: "Refresh scores") { Task { await store.refreshFollowed() } }
+            LNIconButton(systemName: "arrow.clockwise", label: "Refresh scores") { Task { await store.refreshFollowed(force: true) } }
             LNIconButton(systemName: "star.circle.fill", label: "Choose sports and teams") { showPicker = true }
         }
+    }
+}
+
+// MARK: - Cricket key
+
+/// Cricket needs your own free CricAPI key (kept in the Keychain). Shown wherever cricket is used without one.
+struct CricketKeyBanner: View {
+    @EnvironmentObject private var store: ScoresStore
+    @State private var key = ""
+
+    var body: some View {
+        VStack(alignment: .leading, spacing: 5) {
+            Label("Cricket needs a free CricAPI key", systemImage: "key.fill").lnFont(11.5, .semibold)
+            Text("Sign up free at cricapi.com, copy your API key and paste it here. It is stored in the macOS Keychain and only sent to CricAPI. The free plan allows about 100 requests a day, so cricket refreshes every 15 minutes.")
+                .lnFont(10).foregroundStyle(.secondary)
+            HStack {
+                SecureField("CricAPI key", text: $key).textFieldStyle(.roundedBorder).frame(maxWidth: 260)
+                Button("Save key") { store.saveCricketKey(key); key = "" }
+                    .buttonStyle(LNButtonStyle(prominent: true)).disabled(key.isEmpty)
+                Link("Get a free key", destination: URL(string: "https://www.cricapi.com")!).lnFont(10.5)
+            }
+        }
+        .frame(maxWidth: .infinity, alignment: .leading)
+        .card(padding: 8)
     }
 }
 
@@ -79,6 +103,7 @@ struct MySportsView: View {
             let games = store.myGames
             ScrollView {
                 VStack(alignment: .leading, spacing: 8) {
+                    if store.followsCricket && !store.cricketKeySaved { CricketKeyBanner() }
                     if let error = store.error { Text(error).lnFont(10.5).foregroundStyle(.orange) }
                     section("Live", games.filter { $0.state == .live })
                     section("Coming up", games.filter { $0.state == .scheduled })
@@ -262,6 +287,7 @@ struct BrowseView: View {
                 }
                 if store.browseLoading { ProgressView().controlSize(.small) }
             }
+            if league.group == .cricket && !store.cricketKeySaved { CricketKeyBanner() }
             if let error = store.browseError { Text(error).lnFont(10.5).foregroundStyle(.orange).frame(maxWidth: .infinity, alignment: .leading) }
             ScrollView {
                 if store.browseGames.isEmpty && !store.browseLoading && store.browseError == nil {
@@ -388,7 +414,10 @@ struct FollowPickerView: View {
 
                 VStack(alignment: .leading, spacing: 6) {
                     Text(selected.title).lnFont(12.5, .bold)
-                    if selected.kind != .teams {
+                    if selected.group == .cricket {
+                        if !store.cricketKeySaved { CricketKeyBanner() }
+                        CricketTeamFollow(teams: store.follows.teams.filter { $0.leagueID == CricketFeed.leagueID })
+                    } else if selected.kind != .teams {
                         Text("Follow the star to see every \(selected.title) event. (Individual players aren't followable here.)")
                             .lnFont(10.5).foregroundStyle(.secondary)
                     } else if store.teamsLoading {
@@ -422,6 +451,31 @@ struct FollowPickerView: View {
         }
         .task(id: selectedID) { await store.loadTeams(league: selected) }
     }
+}
+
+struct CricketTeamFollow: View {
+    @EnvironmentObject private var store: ScoresStore
+    let teams: [FollowedTeam]
+    @State private var name = ""
+
+    var body: some View {
+        VStack(alignment: .leading, spacing: 5) {
+            Text("Follow a team by name (the star on the left follows every match).").lnFont(10).foregroundStyle(.secondary)
+            HStack {
+                TextField("e.g. India, Australia, Mumbai Indians", text: $name).textFieldStyle(.roundedBorder).onSubmit(add)
+                Button("Follow", action: add).buttonStyle(LNButtonStyle(prominent: true)).disabled(name.isEmpty)
+            }
+            ForEach(teams) { team in
+                HStack {
+                    Text(team.name).lnFont(11.5)
+                    Spacer()
+                    Button { store.unfollow(team) } label: { Image(systemName: "star.fill").foregroundStyle(Color.yellow) }.buttonStyle(.plain)
+                }
+            }
+        }
+    }
+
+    private func add() { store.followCricketTeam(named: name); name = "" }
 }
 
 // MARK: - Match detail
@@ -585,7 +639,7 @@ struct GameDetailView: View {
             if !g.broadcast.isEmpty { Text("TV: \(g.broadcast)").lnFont(11) }
             if !g.odds.isEmpty { Text("Odds: \(g.odds) (information only)").lnFont(11) }
             ForEach(detail.info, id: \.self) { Text($0).lnFont(11) }
-            Text("Source: ESPN public feed (unofficial).").lnFont(9.5).foregroundStyle(.secondary)
+            Text(g.leagueID == CricketFeed.leagueID ? "Source: CricAPI (cricketdata.org)." : "Source: ESPN public feed (unofficial).").lnFont(9.5).foregroundStyle(.secondary)
         }
         .frame(maxWidth: .infinity, alignment: .leading)
         .card(padding: 8)

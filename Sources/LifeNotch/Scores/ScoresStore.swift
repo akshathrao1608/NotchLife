@@ -36,12 +36,58 @@ final class ScoresStore: ObservableObject {
     @Published private(set) var teamOptions: [TeamOption] = []
     @Published private(set) var teamsLoading = false
 
+    // Cricket (CricAPI, optional free key)
+    @Published private(set) var cricketKeySaved = KeychainStore.has(account: CricketFeed.keyAccount)
+    @Published private(set) var cricketError: String?
+    private var cricketCache: [SGame] = []
+    private var cricketFetched = Date.distantPast
+    private var cricketDetailCache: [String: (time: Date, detail: GameDetail)] = [:]
+
     private let settings: AppSettings
     private static let fileName = "sportsfollow.json"
 
     init(settings: AppSettings) {
         self.settings = settings
         follows = LocalStore.load(SportsFollows.self, name: Self.fileName) ?? SportsFollows()
+    }
+
+    // MARK: Cricket key and fetching
+
+    func saveCricketKey(_ key: String) {
+        let clean = key.trimmingCharacters(in: .whitespacesAndNewlines)
+        guard !clean.isEmpty, KeychainStore.set(clean, account: CricketFeed.keyAccount) else { return }
+        cricketKeySaved = true
+        cricketError = nil
+        cricketFetched = .distantPast
+        Task { await refreshFollowed() }
+    }
+
+    func removeCricketKey() {
+        KeychainStore.delete(account: CricketFeed.keyAccount)
+        cricketKeySaved = false
+        cricketCache = []
+        gamesByLeague[CricketFeed.leagueID] = nil
+    }
+
+    var followsCricket: Bool { activeLeagueIDs.contains(CricketFeed.leagueID) }
+
+    /// The match list, at most once every 15 minutes (the free key allows about 100 requests a day).
+    @MainActor
+    func cricketMatches(force: Bool = false) async -> [SGame]? {
+        guard let key = KeychainStore.get(account: CricketFeed.keyAccount), !key.isEmpty else { return nil }
+        if Date().timeIntervalSince(cricketFetched) < (force ? 120 : 15 * 60) { return cricketCache }
+        guard let data = await Self.get(CricketFeed.url("currentMatches", key: key, extra: "&offset=0")) else {
+            cricketError = "Couldn't reach the cricket service."
+            return nil
+        }
+        if let reason = CricketFeed.failureReason(data) {
+            cricketError = reason
+            return nil
+        }
+        cricketError = nil
+        cricketCache = CricketFeed.games(from: data)
+        cricketFetched = Date()
+        return cricketCache
     }
 
     // MARK: Following
@@ -72,6 +118,16 @@ final class ScoresStore: ObservableObject {
         } else {
             follows.teams.append(FollowedTeam(leagueID: leagueID, teamID: team.id, name: team.name, abbr: team.abbr, logo: team.logo?.absoluteString ?? ""))
         }
+        save()
+        Task { await refreshFollowed() }
+    }
+
+    /// Cricket has no team list, so you follow a team by typing its name (e.g. "India").
+    func followCricketTeam(named name: String) {
+        let clean = name.trimmingCharacters(in: .whitespaces)
+        guard !clean.isEmpty, !follows.teams.contains(where: { $0.leagueID == CricketFeed.leagueID && $0.teamID == clean.lowercased() }) else { return }
+        follows.teams.append(FollowedTeam(leagueID: CricketFeed.leagueID, teamID: clean.lowercased(), name: clean,
+                                          abbr: String(clean.prefix(3)).uppercased(), logo: ""))
         save()
         Task { await refreshFollowed() }
     }
@@ -146,9 +202,10 @@ final class ScoresStore: ObservableObject {
     }
 
     @MainActor
-    func refreshFollowed() async {
-        let leagues = activeLeagueIDs.compactMap { SportsCatalog.league($0) }
-        guard !leagues.isEmpty else {
+    func refreshFollowed(force: Bool = false) async {
+        let allLeagues = activeLeagueIDs.compactMap { SportsCatalog.league($0) }
+        let leagues = allLeagues.filter { $0.group != .cricket }
+        guard !allLeagues.isEmpty else {
             gamesByLeague = [:]
             return
         }
@@ -168,8 +225,11 @@ final class ScoresStore: ObservableObject {
             }
         }
         for (id, games) in fresh { gamesByLeague[id] = games }
+        if followsCricket, cricketKeySaved {
+            if let cricket = await cricketMatches(force: force) { gamesByLeague[CricketFeed.leagueID] = cricket } else { failed += 1 }
+        }
         gamesByLeague = gamesByLeague.filter { activeLeagueIDs.contains($0.key) }
-        error = failed == 0 ? nil : "Couldn't reach the score feed for \(failed) of \(leagues.count) league(s). Check your connection and try again."
+        error = failed == 0 ? nil : (cricketError ?? "Couldn't reach the score feed for \(failed) league(s). Check your connection and try again.")
         updated = Date()
         scheduleReminders()
     }
@@ -181,6 +241,14 @@ final class ScoresStore: ObservableObject {
         browseLoading = true
         browseError = nil
         defer { browseLoading = false }
+        if league.group == .cricket {
+            guard cricketKeySaved else { browseGames = []; browseError = "Add your free CricAPI key to see cricket."; return }
+            if let games = await cricketMatches() { browseGames = Self.sorted(games) } else {
+                browseGames = []
+                browseError = cricketError ?? "Couldn't load cricket."
+            }
+            return
+        }
         guard let games = await Self.scoreboard(league, from: day, to: day) else {
             browseGames = []
             browseError = "Couldn't load \(league.title). Check your connection."
@@ -195,6 +263,23 @@ final class ScoresStore: ObservableObject {
         detailError = nil
         detailLoading = true
         defer { detailLoading = false }
+        if game.leagueID == CricketFeed.leagueID {
+            if let cached = cricketDetailCache[game.eventID], Date().timeIntervalSince(cached.time) < 300 {
+                detail = cached.detail
+                return
+            }
+            guard let key = KeychainStore.get(account: CricketFeed.keyAccount),
+                  let data = await Self.get(CricketFeed.url("match_scorecard", key: key, extra: "&id=\(game.eventID)")) else {
+                detailError = "Couldn't load the scorecard."
+                return
+            }
+            if let reason = CricketFeed.failureReason(data) { detailError = reason; return }
+            let parsed = CricketFeed.detail(from: data)
+            cricketDetailCache[game.eventID] = (Date(), parsed)
+            detail = parsed
+            if parsed.isEmpty { detailError = "No scorecard is published for this match yet." }
+            return
+        }
         guard let league = SportsCatalog.league(game.leagueID),
               let data = await Self.get(Self.url(league.path, "summary?event=\(game.eventID)")) else {
             detailError = "Couldn't load the match details."
@@ -235,7 +320,9 @@ final class ScoresStore: ObservableObject {
     func compactInfo() -> ScoresCompact? {
         let mine = myGames.filter { isFollowedTeamGame($0) && $0.first != nil && $0.second != nil }
         if let live = mine.first(where: { $0.state == .live }), let a = live.first, let b = live.second {
-            return ScoresCompact(icon: "circle.fill", text: "\(a.abbr) \(a.score)-\(b.score) \(b.abbr)", isLive: true,
+            func short(_ score: String) -> String { String(score.split(separator: "(").first ?? "").trimmingCharacters(in: .whitespaces) }
+            let text = live.leagueID == CricketFeed.leagueID ? "\(a.abbr) \(short(a.score)) v \(b.abbr) \(short(b.score))" : "\(a.abbr) \(a.score)-\(b.score) \(b.abbr)"
+            return ScoresCompact(icon: "circle.fill", text: text, isLive: true,
                                  label: "Live: \(a.name) \(a.score), \(b.name) \(b.score). \(live.statusText)")
         }
         if let next = mine.filter({ $0.state == .scheduled && ($0.start ?? .distantPast) > Date() })

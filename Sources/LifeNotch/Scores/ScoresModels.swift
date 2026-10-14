@@ -5,7 +5,7 @@ import Foundation
 // every sport and league LifeNotch knows, the games, their detailed stats, standings and team lists.
 
 enum SportGroup: String, CaseIterable, Identifiable {
-    case soccer, basketball, americanFootball, baseball, hockey, tennis, golf, racing, mma, aussieRules
+    case soccer, basketball, americanFootball, baseball, hockey, cricket, tennis, golf, racing, mma, aussieRules
     var id: String { rawValue }
 
     var title: String {
@@ -15,6 +15,7 @@ enum SportGroup: String, CaseIterable, Identifiable {
         case .americanFootball: return "American Football"
         case .baseball: return "Baseball"
         case .hockey: return "Hockey"
+        case .cricket: return "Cricket"
         case .tennis: return "Tennis"
         case .golf: return "Golf"
         case .racing: return "Motorsport"
@@ -30,6 +31,7 @@ enum SportGroup: String, CaseIterable, Identifiable {
         case .americanFootball: return "football.fill"
         case .baseball: return "baseball.fill"
         case .hockey: return "hockey.puck.fill"
+        case .cricket: return "cricket.ball.fill"
         case .tennis: return "tennisball.fill"
         case .golf: return "figure.golf"
         case .racing: return "flag.checkered"
@@ -78,6 +80,7 @@ enum SportsCatalog {
         all += make(.americanFootball, .teams, [("football/nfl", "NFL"), ("football/college-football", "College Football")])
         all += make(.baseball, .teams, [("baseball/mlb", "MLB")])
         all += make(.hockey, .teams, [("hockey/nhl", "NHL")])
+        all += make(.cricket, .teams, [("cricket/live", "Live and recent matches (needs a free key)")])
         all += make(.aussieRules, .teams, [("australian-football/afl", "AFL")])
         all += make(.tennis, .duel, [("tennis/atp", "ATP Tour"), ("tennis/wta", "WTA Tour")])
         all += make(.mma, .duel, [("mma/ufc", "UFC")])

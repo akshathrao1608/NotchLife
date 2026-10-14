@@ -429,4 +429,23 @@ final class ModuleTests: XCTestCase {
         let teams = #"{"sports":[{"leagues":[{"teams":[{"team":{"id":"9","displayName":"Zed FC","abbreviation":"ZED"}},{"team":{"id":"3","displayName":"Alpha FC"}}]}]}]}"#
         XCTAssertEqual(ScoresParser.teams(from: Data(teams.utf8)).map { $0.name }, ["Alpha FC", "Zed FC"])
     }
+
+    func testCricketParsing() {
+        let list = #"{"status":"success","data":[{"id":"abc","name":"India vs Australia, 3rd ODI","matchType":"odi","status":"India won by 5 wickets","venue":"Wankhede, Mumbai","dateTimeGMT":"2026-10-14T08:00:00","teams":["India","Australia"],"teamInfo":[{"name":"India","shortname":"IND","img":"https://example.com/ind.png"},{"name":"Australia","shortname":"AUS"}],"score":[{"r":287,"w":6,"o":50,"inning":"India Innings 1"},{"r":286,"w":10,"o":49.2,"inning":"Australia Innings 1"}],"matchStarted":true,"matchEnded":true}]}"#
+        let games = CricketFeed.games(from: Data(list.utf8))
+        XCTAssertEqual(games.count, 1)
+        XCTAssertEqual(games[0].first?.score, "287/6 (50)")
+        XCTAssertEqual(games[0].second?.score, "286/10 (49.2)")
+        XCTAssertEqual(games[0].first?.winner, true)
+        XCTAssertEqual(games[0].state, .final)
+        XCTAssertEqual(games[0].first?.id, "india")
+        XCTAssertNotNil(games[0].start)
+        let failure = #"{"status":"failure","reason":"Invalid API key"}"#
+        XCTAssertEqual(CricketFeed.failureReason(Data(failure.utf8)), "Invalid API key")
+        let card = #"{"data":{"venue":"Wankhede","tossWinner":"India","tossChoice":"bat","status":"India won","scorecard":[{"inning":"India Innings 1","batting":[{"batsman":{"name":"A Kohli"},"dismissal-text":"c X b Y","r":88,"b":70,"4s":9,"6s":2,"sr":125.7}],"bowling":[{"bowler":{"name":"P Cummins"},"o":10,"m":1,"r":55,"w":2,"eco":5.5}]}]}}"#
+        let detail = CricketFeed.detail(from: Data(card.utf8))
+        XCTAssertEqual(detail.tables.count, 2)
+        XCTAssertEqual(detail.tables[0].rows[0][0], "A Kohli (c X b Y)")
+        XCTAssertTrue(detail.info.contains("Toss: India chose to bat"))
+    }
 }
